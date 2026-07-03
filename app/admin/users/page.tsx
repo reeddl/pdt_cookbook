@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { prisma } from "@/lib/prisma";
 import { Card, Badge } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -61,6 +62,9 @@ export default async function AdminUsersPage() {
                 <Badge className={user.status === "REJECTED" ? "bg-danger/10 text-danger" : ""}>
                   {user.status}
                 </Badge>
+                <Link href={`/admin/users/${user.id}/edit`}>
+                  <Button variant="secondary">Edit</Button>
+                </Link>
               </div>
             </Card>
           ))}
