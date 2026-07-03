@@ -14,6 +14,7 @@ interface SidebarRecipe {
 export function Sidebar({ recipes }: { recipes: SidebarRecipe[] }) {
   const [query, setQuery] = useState("");
   const [collapsed, setCollapsed] = useState<Record<string, boolean>>({});
+  const [mobileOpen, setMobileOpen] = useState(false);
   const pathname = usePathname();
 
   const filtered = useMemo(() => {
@@ -35,61 +36,93 @@ export function Sidebar({ recipes }: { recipes: SidebarRecipe[] }) {
   }, [filtered]);
 
   return (
-    <aside className="flex h-full w-[280px] flex-shrink-0 flex-col border-r border-border bg-sidebar">
-      <div className="p-4">
-        <input
-          type="search"
-          value={query}
-          onChange={(e) => setQuery(e.target.value)}
-          placeholder="Search recipes…"
-          className="w-full rounded-lg border border-border bg-surface px-3 py-2 text-sm text-text placeholder:text-text-muted focus:outline-none focus:ring-2 focus:ring-accent/40"
+    <>
+      <button
+        type="button"
+        onClick={() => setMobileOpen(true)}
+        aria-label="Open recipe list"
+        className="fixed left-4 top-3 z-30 rounded-lg border border-border bg-surface px-3 py-2 text-sm text-text shadow-sm sm:hidden"
+      >
+        ☰ Recipes
+      </button>
+
+      {mobileOpen && (
+        <div
+          className="fixed inset-0 z-30 bg-black/30 sm:hidden"
+          onClick={() => setMobileOpen(false)}
         />
-      </div>
-      <nav className="flex-1 overflow-y-auto px-2 pb-4">
-        {grouped.length === 0 && (
-          <p className="px-2 text-sm text-text-muted">No recipes found.</p>
+      )}
+
+      <aside
+        className={cn(
+          "fixed inset-y-0 left-0 z-40 flex h-full w-[280px] flex-shrink-0 flex-col border-r border-border bg-sidebar transition-transform duration-200 sm:static sm:translate-x-0",
+          mobileOpen ? "translate-x-0" : "-translate-x-full"
         )}
-        {grouped.map(([category, items]) => {
-          const isCollapsed = collapsed[category];
-          return (
-            <div key={category} className="mb-1">
-              <button
-                type="button"
-                onClick={() =>
-                  setCollapsed((prev) => ({ ...prev, [category]: !prev[category] }))
-                }
-                className="flex w-full items-center justify-between rounded-md px-2 py-1.5 text-left text-xs font-semibold uppercase tracking-wide text-text-muted hover:text-text"
-              >
-                {category}
-                <span className={cn("transition-transform", isCollapsed && "-rotate-90")}>
-                  ▾
-                </span>
-              </button>
-              {!isCollapsed && (
-                <ul>
-                  {items.map((recipe) => {
-                    const href = `/recipes/${recipe.id}`;
-                    const active = pathname === href;
-                    return (
-                      <li key={recipe.id}>
-                        <Link
-                          href={href}
-                          className={cn(
-                            "block rounded-md px-3 py-1.5 text-sm text-text hover:bg-border",
-                            active && "bg-accent/10 font-medium text-accent"
-                          )}
-                        >
-                          {recipe.title}
-                        </Link>
-                      </li>
-                    );
-                  })}
-                </ul>
-              )}
-            </div>
-          );
-        })}
-      </nav>
-    </aside>
+      >
+        <div className="flex items-center justify-between p-4 sm:pt-4">
+          <input
+            type="search"
+            value={query}
+            onChange={(e) => setQuery(e.target.value)}
+            placeholder="Search recipes…"
+            className="w-full rounded-lg border border-border bg-surface px-3 py-2 text-sm text-text placeholder:text-text-muted focus:outline-none focus:ring-2 focus:ring-accent/40"
+          />
+          <button
+            type="button"
+            onClick={() => setMobileOpen(false)}
+            aria-label="Close recipe list"
+            className="ml-2 text-text-muted sm:hidden"
+          >
+            ✕
+          </button>
+        </div>
+        <nav className="flex-1 overflow-y-auto px-2 pb-4">
+          {grouped.length === 0 && (
+            <p className="px-2 text-sm text-text-muted">No recipes found.</p>
+          )}
+          {grouped.map(([category, items]) => {
+            const isCollapsed = collapsed[category];
+            return (
+              <div key={category} className="mb-1">
+                <button
+                  type="button"
+                  onClick={() =>
+                    setCollapsed((prev) => ({ ...prev, [category]: !prev[category] }))
+                  }
+                  className="flex w-full items-center justify-between rounded-md px-2 py-1.5 text-left text-xs font-semibold uppercase tracking-wide text-text-muted hover:text-text"
+                >
+                  {category}
+                  <span className={cn("transition-transform", isCollapsed && "-rotate-90")}>
+                    ▾
+                  </span>
+                </button>
+                {!isCollapsed && (
+                  <ul>
+                    {items.map((recipe) => {
+                      const href = `/recipes/${recipe.id}`;
+                      const active = pathname === href;
+                      return (
+                        <li key={recipe.id}>
+                          <Link
+                            href={href}
+                            onClick={() => setMobileOpen(false)}
+                            className={cn(
+                              "block rounded-md px-3 py-1.5 text-sm text-text hover:bg-border",
+                              active && "bg-accent/10 font-medium text-accent"
+                            )}
+                          >
+                            {recipe.title}
+                          </Link>
+                        </li>
+                      );
+                    })}
+                  </ul>
+                )}
+              </div>
+            );
+          })}
+        </nav>
+      </aside>
+    </>
   );
 }
