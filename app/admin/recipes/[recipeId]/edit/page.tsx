@@ -18,7 +18,7 @@ export default async function EditRecipePage({
 
   return (
     <div>
-      <h2 className="mb-6 font-display text-xl text-text">Edit recipe</h2>
+      <h2 className="mb-6 text-title-2-semibold text-text-primary">Edit recipe</h2>
       <RecipeForm
         action={updateRecipe.bind(null, recipe.id)}
         submitLabel="Save changes"

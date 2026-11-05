@@ -23,19 +23,19 @@ export function FoodieScoreCard({ score, parts }: { score: number; parts: Foodie
   return (
     <Card className="flex flex-wrap items-center gap-x-8 gap-y-4 p-5">
       <div>
-        <p className="text-xs font-semibold uppercase tracking-wide text-text-muted">
+        <p className="text-caption-1-semibold uppercase tracking-wide text-text-secondary">
           Foodie score
         </p>
-        <p className="font-display text-4xl text-accent">{score}</p>
-        <p className="text-sm text-text-muted">{foodieRank(score)}</p>
+        <p className="text-display-4-semibold text-text-primary">{score}</p>
+        <p className="text-body-regular text-text-secondary">{foodieRank(score)}</p>
       </div>
       <dl className="flex flex-wrap gap-x-6 gap-y-2">
         {BREAKDOWN.map(({ key, label, weight }) => (
           <div key={key}>
-            <dt className="text-xs text-text-muted">
+            <dt className="text-caption-1-regular text-text-secondary">
               {label} <span className="opacity-70">×{weight}</span>
             </dt>
-            <dd className="text-lg font-medium text-text">{parts[key]}</dd>
+            <dd className="text-title-3-medium font-medium text-text-primary">{parts[key]}</dd>
           </div>
         ))}
       </dl>

@@ -13,20 +13,20 @@ export default async function PendingRecipesPage() {
   return (
     <div className="space-y-4">
       {recipes.length === 0 ? (
-        <p className="text-sm text-text-muted">No recipe submissions waiting for review.</p>
+        <p className="text-body-regular text-text-secondary">No recipe submissions waiting for review.</p>
       ) : (
         recipes.map((recipe) => (
           <Card key={recipe.id} className="p-5">
             <div className="flex items-start justify-between gap-4">
               <div>
-                <p className="font-medium text-text">{recipe.title}</p>
+                <p className="font-medium text-text-primary">{recipe.title}</p>
                 <div className="mt-1 flex items-center gap-2">
                   <Badge>{recipe.category}</Badge>
-                  <span className="text-xs text-text-muted">
+                  <span className="text-caption-1-regular text-text-secondary">
                     submitted by {recipe.submitterName}
                   </span>
                 </div>
-                <p className="mt-3 whitespace-pre-line text-sm text-text-muted">
+                <p className="mt-3 whitespace-pre-line text-body-regular text-text-secondary">
                   {recipe.ingredients}
                 </p>
               </div>
@@ -35,7 +35,7 @@ export default async function PendingRecipesPage() {
                 <img
                   src={recipe.photoUrl}
                   alt={recipe.title}
-                  className="h-24 w-24 flex-shrink-0 rounded-lg object-cover"
+                  className="h-24 w-24 flex-shrink-0 rounded-2lg object-cover"
                 />
               )}
             </div>

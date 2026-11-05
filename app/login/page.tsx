@@ -10,8 +10,8 @@ export default function LoginPage() {
         <div className="mb-4 flex justify-center">
           <ShieldLogo height={72} preload />
         </div>
-        <h1 className="font-display text-3xl text-text">PDT Cookbook</h1>
-        <p className="mt-2 text-sm text-text-muted">
+        <h1 className="text-title-1-semibold text-text-primary">PDT Cookbook</h1>
+        <p className="mt-2 text-body-regular text-text-secondary">
           Sign in with your Google account to view the recipe collection.
         </p>
         <form

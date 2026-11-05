@@ -24,16 +24,16 @@ export function ProfileHeader({
         <img
           src={avatarUrl}
           alt=""
-          className="h-16 w-16 rounded-full border border-border object-cover"
+          className="h-16 w-16 rounded-full border border-separator-border object-cover"
         />
       ) : (
-        <div className="flex h-16 w-16 items-center justify-center rounded-full border border-border bg-sidebar font-display text-xl text-text-muted">
+        <div className="flex h-16 w-16 items-center justify-center rounded-full border border-separator-border bg-background-secondary-default text-title-2-semibold text-text-secondary">
           {name.charAt(0).toUpperCase()}
         </div>
       )}
       <div>
-        <h1 className="font-display text-2xl text-text">{name}</h1>
-        {email && <p className="text-sm text-text-muted">{email}</p>}
+        <h1 className="text-title-1-semibold text-text-primary">{name}</h1>
+        {email && <p className="text-body-regular text-text-secondary">{email}</p>}
         <div className="mt-2 flex flex-wrap gap-2">
           {pledgeClass && <Badge>{pledgeClass}</Badge>}
           {graduationYear && <Badge>Class of {graduationYear}</Badge>}

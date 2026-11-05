@@ -11,8 +11,8 @@ export default function ErrorPage({
 }) {
   return (
     <div className="flex min-h-screen flex-1 flex-col items-center justify-center gap-3 px-4 text-center">
-      <h1 className="font-display text-3xl text-text">Something went wrong</h1>
-      <p className="max-w-md text-sm text-text-muted">
+      <h1 className="text-title-1-semibold text-text-primary">Something went wrong</h1>
+      <p className="max-w-md text-body-regular text-text-secondary">
         {error.message || "An unexpected error occurred. Please try again."}
       </p>
       <Button onClick={() => reset()}>Try again</Button>

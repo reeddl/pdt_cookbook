@@ -17,10 +17,10 @@ export default async function PendingPage() {
         <div className="mb-4 flex justify-center">
           <ShieldLogo height={64} preload />
         </div>
-        <h1 className="font-display text-2xl text-text">
+        <h1 className="text-title-1-semibold text-text-primary">
           {rejected ? "Access denied" : "Awaiting approval"}
         </h1>
-        <p className="mt-2 text-sm text-text-muted">
+        <p className="mt-2 text-body-regular text-text-secondary">
           {rejected
             ? "Your account request was not approved. If you think this is a mistake, reach out to the admin."
             : "Thanks for signing in! An admin needs to approve your account before you can browse recipes. Check back soon."}

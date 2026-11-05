@@ -16,7 +16,7 @@ export function ShieldLoader({ label = "Loading…", size = 88, className }: Shi
       className={cn("flex flex-col items-center justify-center gap-4 py-20", className)}
     >
       <ShieldMark size={size} animated />
-      <p className="text-sm text-text-muted">{label}</p>
+      <p className="text-body-regular text-text-secondary">{label}</p>
     </div>
   );
 }

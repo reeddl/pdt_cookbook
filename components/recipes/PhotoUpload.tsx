@@ -41,7 +41,7 @@ export function PhotoUpload({ name, defaultValue }: PhotoUploadProps) {
         <img
           src={url}
           alt="Recipe photo preview"
-          className="mb-2 h-40 w-full rounded-lg object-cover"
+          className="mb-2 h-40 w-full rounded-2lg object-cover"
         />
       )}
       <label className="inline-block">
@@ -51,16 +51,16 @@ export function PhotoUpload({ name, defaultValue }: PhotoUploadProps) {
           accept="image/png,image/jpeg,image/webp,image/gif"
           onChange={handleFileChange}
           disabled={uploading}
-          className="block w-full text-sm text-text-muted file:mr-3 file:rounded-lg file:border-0 file:bg-sidebar file:px-3 file:py-2 file:text-sm file:font-medium file:text-text hover:file:bg-border disabled:opacity-50"
+          className="block w-full text-body-regular text-text-secondary file:mr-3 file:rounded-2lg file:border-0 file:bg-background-secondary-default file:px-3 file:py-2 file:text-body-regular file:font-medium file:text-text-primary hover:file:bg-background-tertiary-default disabled:opacity-50"
         />
       </label>
       {uploading && (
-        <p className="mt-1 flex items-center gap-1.5 text-xs text-text-muted">
+        <p className="mt-1 flex items-center gap-1.5 text-caption-1-regular text-text-secondary">
           <Spinner className="h-3 w-3" />
           Uploading…
         </p>
       )}
-      {error && <p className="mt-1 text-xs text-danger">{error}</p>}
+      {error && <p className="mt-1 text-caption-1-regular text-text-error-primary">{error}</p>}
     </div>
   );
 }

@@ -42,11 +42,11 @@ export default async function MemberProfilePage({
       </section>
 
       <section className="mt-10">
-        <h2 className="mb-4 font-display text-lg text-text">
+        <h2 className="mb-4 text-title-3-semibold text-text-primary">
           Recipes submitted {recipes.length > 0 && `(${recipes.length})`}
         </h2>
         {recipes.length === 0 ? (
-          <p className="text-sm text-text-muted">
+          <p className="text-body-regular text-text-secondary">
             {user.name} hasn&apos;t had a recipe published yet.
           </p>
         ) : (
@@ -67,7 +67,7 @@ export default async function MemberProfilePage({
       </section>
 
       <section className="mt-10">
-        <h2 className="mb-4 font-display text-lg text-text">Family</h2>
+        <h2 className="mb-4 text-title-3-semibold text-text-primary">Family</h2>
         <FamilyTree bigChain={bigChain} littles={littles} />
       </section>
     </div>

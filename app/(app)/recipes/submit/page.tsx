@@ -19,13 +19,13 @@ export default async function SubmitRecipePage({
 
   return (
     <div>
-      <h1 className="mb-2 font-display text-2xl text-text">Suggest a recipe</h1>
-      <p className="mb-6 text-sm text-text-muted">
+      <h1 className="mb-2 text-title-1-semibold text-text-primary">Suggest a recipe</h1>
+      <p className="mb-6 text-body-regular text-text-secondary">
         Your submission will be reviewed by an admin before it appears in the cookbook.
       </p>
 
       {submitted && (
-        <div className="mb-6 rounded-xl bg-success/10 p-4 text-sm text-success">
+        <div className="mb-6 rounded-3xl bg-status-lime-background p-4 text-body-regular text-status-lime-text">
           Thanks! Your recipe was submitted and is awaiting approval.
         </div>
       )}
@@ -39,8 +39,8 @@ export default async function SubmitRecipePage({
           defaultValues={{ submitterName: session?.user.name ?? "" }}
         />
       ) : (
-        <p className="text-sm text-text-muted">
-          <Link href="/profile" className="text-accent underline">
+        <p className="text-body-regular text-text-secondary">
+          <Link href="/profile" className="text-button-ghost-foreground underline">
             Add your bond number, pledge class, and graduation year
           </Link>{" "}
           to your profile before submitting a recipe.

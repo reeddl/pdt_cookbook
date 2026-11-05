@@ -1,14 +1,17 @@
 import type { Metadata } from "next";
-import { Lora, Source_Sans_3 } from "next/font/google";
+import Script from "next/script";
+import { Inter, JetBrains_Mono } from "next/font/google";
+import { DirectionProvider } from "@/components/foundations/direction/direction";
 import "./globals.css";
 
-const lora = Lora({
-  variable: "--font-lora",
+const inter = Inter({
+  variable: "--font-inter",
   subsets: ["latin"],
+  axes: ["opsz"],
 });
 
-const sourceSans = Source_Sans_3({
-  variable: "--font-source-sans",
+const jetbrainsMono = JetBrains_Mono({
+  variable: "--font-mono-source",
   subsets: ["latin"],
 });
 
@@ -24,11 +27,17 @@ export default function RootLayout({
 }>) {
   return (
     <html
-      lang="en"
-      className={`${lora.variable} ${sourceSans.variable} h-full antialiased`}
+      lang="en-US"
+      dir="ltr"
+      className={`${inter.variable} ${jetbrainsMono.variable} h-full antialiased`}
+      suppressHydrationWarning
     >
-      <body className="min-h-full flex flex-col font-sans bg-bg text-text">
-        {children}
+      <body className="flex min-h-full flex-col font-sans">
+        {/* Applies the stored theme before first paint so dark-mode visitors never see a flash. */}
+        <Script id="boardui-theme" strategy="beforeInteractive">
+          {`(function(){try{var dark=localStorage.getItem("boardui:theme")==="dark";document.documentElement.classList.toggle("dark",dark)}catch(e){document.documentElement.classList.remove("dark")}})();`}
+        </Script>
+        <DirectionProvider locale="en-US">{children}</DirectionProvider>
       </body>
     </html>
   );

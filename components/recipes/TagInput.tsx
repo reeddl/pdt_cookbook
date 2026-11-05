@@ -93,19 +93,19 @@ export function TagInput({
 
       <div
         onClick={() => inputRef.current?.focus()}
-        className="flex min-h-[42px] w-full flex-wrap items-center gap-1.5 rounded-lg border border-border bg-surface px-2 py-1.5 focus-within:ring-2 focus-within:ring-accent/40"
+        className="flex min-h-[42px] w-full flex-wrap items-center gap-1.5 rounded-2lg bg-background-tertiary-default px-2 py-1.5 ring-2 ring-inset ring-transparent hover:ring-border-button-hover focus-within:ring-border-button-active"
       >
         {tags.map((tag) => (
           <span
             key={tag}
-            className="inline-flex items-center gap-1 rounded-full bg-accent/10 py-0.5 pl-2.5 pr-1 text-xs font-medium text-accent"
+            className="inline-flex items-center gap-1 rounded-full bg-button-ghost-background py-0.5 pl-2.5 pr-1 text-caption-1-semibold text-button-ghost-foreground"
           >
             {tag}
             <button
               type="button"
               onClick={() => removeTag(tag)}
               aria-label={`Remove tag ${tag}`}
-              className="rounded-full p-0.5 text-accent/70 transition-colors hover:bg-accent/20 hover:text-accent"
+              className="rounded-full p-0.5 text-button-ghost-foreground/70 transition-colors hover:bg-button-ghost-hover hover:text-button-ghost-foreground"
             >
               <CloseIcon className="h-3 w-3" />
             </button>
@@ -134,7 +134,7 @@ export function TagInput({
           onFocus={() => setOpen(true)}
           onBlur={() => setOpen(false)}
           onKeyDown={handleKeyDown}
-          className="min-w-[8rem] flex-1 bg-transparent px-1 py-0.5 text-sm text-text placeholder:text-text-muted focus:outline-none"
+          className="min-w-[8rem] flex-1 bg-transparent px-1 py-0.5 text-body-regular text-text-primary placeholder:text-text-secondary focus:outline-none"
         />
       </div>
 
@@ -144,7 +144,7 @@ export function TagInput({
         hidden={!open || matches.length === 0}
         // Keep focus in the input so the list doesn't close before the click.
         onMouseDown={(e) => e.preventDefault()}
-        className="absolute z-20 mt-1 w-full overflow-hidden rounded-lg border border-border bg-surface py-1 shadow-md"
+        className="absolute z-20 mt-1 w-full overflow-hidden rounded-2lg border border-separator-border bg-background-primary-default py-1 shadow-md"
       >
         {matches.map((match, i) => (
           <li
@@ -155,8 +155,8 @@ export function TagInput({
             onClick={() => addTag(match)}
             onMouseEnter={() => setHighlight(i)}
             className={cn(
-              "cursor-pointer px-3 py-1.5 text-sm text-text",
-              i === highlight && "bg-accent/10 text-accent"
+              "cursor-pointer px-3 py-1.5 text-body-regular text-text-primary",
+              i === highlight && "bg-button-ghost-background text-button-ghost-foreground"
             )}
           >
             {match}
@@ -164,7 +164,7 @@ export function TagInput({
         ))}
       </ul>
 
-      <p className="mt-1 text-xs text-text-muted">
+      <p className="mt-1 text-caption-1-regular text-text-secondary">
         Press enter or comma to add a tag.
       </p>
     </div>

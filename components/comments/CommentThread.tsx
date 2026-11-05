@@ -21,7 +21,7 @@ export function CommentThread({
 }) {
   return (
     <section className="mt-10">
-      <h2 className="mb-4 font-display text-lg text-text">
+      <h2 className="mb-4 text-title-3-semibold text-text-primary">
         Comments {comments.length > 0 && `(${comments.length})`}
       </h2>
 
@@ -33,8 +33,8 @@ export function CommentThread({
           </SubmitButton>
         </form>
       ) : (
-        <p className="mb-6 text-sm text-text-muted">
-          <Link href="/profile" className="text-accent underline">
+        <p className="mb-6 text-body-regular text-text-secondary">
+          <Link href="/profile" className="text-button-ghost-foreground underline">
             Add your bond number, pledge class, and graduation year
           </Link>{" "}
           to your profile before commenting.
@@ -42,11 +42,11 @@ export function CommentThread({
       )}
 
       {comments.length === 0 ? (
-        <p className="text-sm text-text-muted">No comments yet — be the first.</p>
+        <p className="text-body-regular text-text-secondary">No comments yet — be the first.</p>
       ) : (
         <ul className="space-y-4">
           {comments.map((comment) => (
-            <li key={comment.id} className="border-t border-border pt-4">
+            <li key={comment.id} className="border-t border-separator-border pt-4">
               <div className="flex items-center gap-2">
                 {comment.user.avatarUrl && (
                   // eslint-disable-next-line @next/next/no-img-element
@@ -58,15 +58,15 @@ export function CommentThread({
                 )}
                 <Link
                   href={`/profile/${comment.user.id}`}
-                  className="text-sm font-medium text-text hover:text-accent hover:underline"
+                  className="text-body-medium text-text-primary hover:text-button-ghost-foreground hover:underline"
                 >
                   {comment.user.name}
                 </Link>
-                <span className="text-xs text-text-muted">
+                <span className="text-caption-1-regular text-text-secondary">
                   {comment.createdAt.toLocaleDateString()}
                 </span>
               </div>
-              <p className="mt-1 whitespace-pre-line text-sm text-text">{comment.body}</p>
+              <p className="mt-1 whitespace-pre-line text-body-regular text-text-primary">{comment.body}</p>
             </li>
           ))}
         </ul>

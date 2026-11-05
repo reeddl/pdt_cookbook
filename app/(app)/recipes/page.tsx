@@ -6,9 +6,9 @@ export default async function RecipesPage() {
 
   return (
     <div>
-      <h1 className="mb-6 font-display text-2xl text-text">All recipes</h1>
+      <h1 className="mb-6 text-title-1-semibold text-text-primary">All recipes</h1>
       {recipes.length === 0 ? (
-        <p className="text-sm text-text-muted">
+        <p className="text-body-regular text-text-secondary">
           No recipes have been published yet — check back soon.
         </p>
       ) : (
