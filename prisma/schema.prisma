@@ -1,0 +1,145 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+enum UserStatus {
+  PENDING
+  APPROVED
+  REJECTED
+}
+
+enum UserRole {
+  MEMBER
+  ADMIN
+}
+
+enum RecipeStatus {
+  PENDING
+  PUBLISHED
+  REJECTED
+}
+
+model User {
+  id             String     @id @default(cuid())
+  email          String     @unique
+  name           String
+  avatarUrl      String?
+  status         UserStatus @default(PENDING)
+  role           UserRole   @default(MEMBER)
+  bondNumber     String?
+  pledgeClass    String?
+  graduationYear Int?
+
+  bigId String?
+  big    User?   @relation("BigLittle", fields: [bigId], references: [id], onDelete: SetNull)
+  littles User[] @relation("BigLittle")
+
+  accounts Account[]
+  sessions Session[]
+
+  recipesSubmitted Recipe[] @relation("RecipeSubmitter")
+  recipesReviewed  Recipe[] @relation("RecipeReviewer")
+  comments         Comment[]
+  favorites        Favorite[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([status])
+  @@index([bigId])
+}
+
+model Recipe {
+  id           String       @id @default(cuid())
+  title        String
+  ingredients  String
+  instructions String
+  photoUrl     String?
+  category     String
+  tags         String[]     @default([])
+  submitterName String
+
+  submittedById String?
+  submittedBy   User?   @relation("RecipeSubmitter", fields: [submittedById], references: [id], onDelete: SetNull)
+
+  status         RecipeStatus @default(PENDING)
+  reviewedById   String?
+  reviewedBy     User?        @relation("RecipeReviewer", fields: [reviewedById], references: [id], onDelete: SetNull)
+  reviewedAt     DateTime?
+  rejectionReason String?
+
+  comments  Comment[]
+  favorites Favorite[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([status])
+  @@index([category])
+  @@index([tags], type: Gin)
+}
+
+model Comment {
+  id        String   @id @default(cuid())
+  recipeId  String
+  recipe    Recipe   @relation(fields: [recipeId], references: [id], onDelete: Cascade)
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  body      String
+  createdAt DateTime @default(now())
+
+  @@index([recipeId])
+}
+
+model Favorite {
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  recipeId  String
+  recipe    Recipe   @relation(fields: [recipeId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+
+  @@id([userId, recipeId])
+}
+
+// --- Auth.js (NextAuth) required models ---
+
+model Account {
+  id                String  @id @default(cuid())
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String? @db.Text
+  access_token      String? @db.Text
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String? @db.Text
+  session_state     String?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model VerificationToken {
+  identifier String
+  token      String   @unique
+  expires    DateTime
+
+  @@unique([identifier, token])
+}
