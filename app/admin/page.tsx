@@ -22,8 +22,8 @@ export default async function AdminDashboardPage() {
       {stats.map((stat) => (
         <Link key={stat.label} href={stat.href}>
           <Card className="p-6 transition-shadow hover:shadow-md">
-            <p className="text-3xl font-semibold text-text">{stat.value}</p>
-            <p className="mt-1 text-sm text-text-muted">{stat.label}</p>
+            <p className="text-3xl font-semibold text-text-primary">{stat.value}</p>
+            <p className="mt-1 text-body-regular text-text-secondary">{stat.label}</p>
           </Card>
         </Link>
       ))}

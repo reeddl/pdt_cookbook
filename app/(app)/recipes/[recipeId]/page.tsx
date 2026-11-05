@@ -39,7 +39,7 @@ export default async function RecipeDetailPage({
         <img
           src={recipe.photoUrl}
           alt={recipe.title}
-          className="mb-6 h-72 w-full rounded-xl object-cover"
+          className="mb-6 h-72 w-full rounded-3xl object-cover"
         />
       )}
       <div className="flex items-center gap-2">
@@ -51,13 +51,13 @@ export default async function RecipeDetailPage({
 
       <div className="mt-3 flex items-start justify-between gap-4">
         <div>
-          <h1 className="font-display text-3xl text-text">{recipe.title}</h1>
-          <p className="mt-1 text-sm text-text-muted">
+          <h1 className="text-title-1-semibold text-text-primary">{recipe.title}</h1>
+          <p className="mt-1 text-body-regular text-text-secondary">
             Submitted by{" "}
             {recipe.submittedById ? (
               <Link
                 href={`/profile/${recipe.submittedById}`}
-                className="text-accent hover:underline"
+                className="text-button-ghost-foreground hover:underline"
               >
                 {recipe.submitterName}
               </Link>
@@ -71,8 +71,8 @@ export default async function RecipeDetailPage({
 
       <div className="mt-8 grid gap-8 sm:grid-cols-[1fr_2fr]">
         <section>
-          <h2 className="mb-2 font-display text-lg text-text">Ingredients</h2>
-          <ul className="space-y-1 text-sm text-text">
+          <h2 className="mb-2 text-title-3-semibold text-text-primary">Ingredients</h2>
+          <ul className="space-y-1 text-body-regular text-text-primary">
             {recipe.ingredients
               .split("\n")
               .filter(Boolean)
@@ -82,8 +82,8 @@ export default async function RecipeDetailPage({
           </ul>
         </section>
         <section>
-          <h2 className="mb-2 font-display text-lg text-text">Instructions</h2>
-          <p className="whitespace-pre-line text-sm text-text">{recipe.instructions}</p>
+          <h2 className="mb-2 text-title-3-semibold text-text-primary">Instructions</h2>
+          <p className="whitespace-pre-line text-body-regular text-text-primary">{recipe.instructions}</p>
         </section>
       </div>
 

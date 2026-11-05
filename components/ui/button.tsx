@@ -1,26 +1,27 @@
 import { ButtonHTMLAttributes, forwardRef } from "react";
-import { cn } from "@/lib/cn";
+import { buttonStyles } from "@/components/base/buttons/button";
+import { cx } from "@/utils/cx";
 
 type Variant = "primary" | "secondary" | "danger" | "ghost";
-
-const variantClasses: Record<Variant, string> = {
-  primary: "bg-accent text-white hover:bg-accent-hover",
-  secondary: "bg-surface text-text border border-border hover:bg-sidebar",
-  danger: "bg-danger text-white hover:opacity-90",
-  ghost: "bg-transparent text-text hover:bg-sidebar",
-};
 
 interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
   variant?: Variant;
 }
 
+/**
+ * Native-props wrapper over BoardUI's button styles, so server-action forms
+ * (name/value, formAction, type="submit") keep working unchanged.
+ */
 export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
-  ({ className, variant = "primary", ...props }, ref) => (
+  ({ className, variant = "primary", type = "button", ...props }, ref) => (
     <button
       ref={ref}
-      className={cn(
-        "inline-flex items-center justify-center gap-2 rounded-lg px-4 py-2 text-sm font-medium transition-colors disabled:opacity-50 disabled:pointer-events-none",
-        variantClasses[variant],
+      type={type}
+      className={cx(
+        buttonStyles.base,
+        buttonStyles.size.medium,
+        buttonStyles.variant[variant],
+        "px-3",
         className
       )}
       {...props}

@@ -20,16 +20,16 @@ export default async function AdminUsersPage() {
   return (
     <div className="space-y-10">
       <section>
-        <h2 className="mb-3 font-display text-xl text-text">Pending approvals</h2>
+        <h2 className="mb-3 text-title-2-semibold text-text-primary">Pending approvals</h2>
         {pending.length === 0 ? (
-          <p className="text-sm text-text-muted">No accounts waiting for approval.</p>
+          <p className="text-body-regular text-text-secondary">No accounts waiting for approval.</p>
         ) : (
           <div className="space-y-3">
             {pending.map((user) => (
               <Card key={user.id} className="flex items-center justify-between p-4">
                 <div>
-                  <p className="font-medium text-text">{user.name}</p>
-                  <p className="text-sm text-text-muted">{user.email}</p>
+                  <p className="font-medium text-text-primary">{user.name}</p>
+                  <p className="text-body-regular text-text-secondary">{user.email}</p>
                 </div>
                 <div className="flex gap-2">
                   <form action={approveUser.bind(null, user.id)}>
@@ -50,22 +50,22 @@ export default async function AdminUsersPage() {
       </section>
 
       <section>
-        <h2 className="mb-3 font-display text-xl text-text">Roster</h2>
+        <h2 className="mb-3 text-title-2-semibold text-text-primary">Roster</h2>
         <div className="space-y-2">
           {roster.map((user) => (
             <Card key={user.id} className="flex items-center justify-between p-4">
               <div>
                 <Link
                   href={`/profile/${user.id}`}
-                  className="font-medium text-text hover:text-accent hover:underline"
+                  className="font-medium text-text-primary hover:text-button-ghost-foreground hover:underline"
                 >
                   {user.name}
                 </Link>
-                <p className="text-sm text-text-muted">{user.email}</p>
+                <p className="text-body-regular text-text-secondary">{user.email}</p>
               </div>
               <div className="flex items-center gap-2">
                 <Badge>{user.role}</Badge>
-                <Badge className={user.status === "REJECTED" ? "bg-danger/10 text-danger" : ""}>
+                <Badge className={user.status === "REJECTED" ? "bg-background-tertiary-error text-text-error-primary" : ""}>
                   {user.status}
                 </Badge>
                 <Link href={`/admin/users/${user.id}/edit`}>

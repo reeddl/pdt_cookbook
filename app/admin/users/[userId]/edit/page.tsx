@@ -25,7 +25,7 @@ export default async function EditMemberPage({
 
   return (
     <div>
-      <h2 className="mb-6 font-display text-xl text-text">Edit {user.name}</h2>
+      <h2 className="mb-6 text-title-2-semibold text-text-primary">Edit {user.name}</h2>
       <form action={updateMember.bind(null, user.id)} className="max-w-md space-y-4">
         <div>
           <Label htmlFor="name">Name</Label>
@@ -56,7 +56,7 @@ export default async function EditMemberPage({
             id="bigId"
             name="bigId"
             defaultValue={user.bigId ?? ""}
-            className="w-full rounded-lg border border-border bg-surface px-3 py-2 text-sm text-text"
+            className="w-full rounded-2lg bg-background-tertiary-default px-3 py-2 text-body-regular text-text-primary ring-2 ring-inset ring-transparent outline-none hover:ring-border-button-hover focus:ring-border-button-active"
           >
             <option value="">None</option>
             {otherMembers.map((m) => (
@@ -72,7 +72,7 @@ export default async function EditMemberPage({
             id="role"
             name="role"
             defaultValue={user.role}
-            className="w-full rounded-lg border border-border bg-surface px-3 py-2 text-sm text-text"
+            className="w-full rounded-2lg bg-background-tertiary-default px-3 py-2 text-body-regular text-text-primary ring-2 ring-inset ring-transparent outline-none hover:ring-border-button-hover focus:ring-border-button-active"
           >
             <option value="MEMBER">Member</option>
             <option value="ADMIN">Admin</option>

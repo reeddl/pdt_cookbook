@@ -14,28 +14,28 @@ export default async function AdminLayout({ children }: { children: React.ReactN
         <div className="flex items-center gap-3">
           <ShieldLogo height={38} preload />
           <div>
-            <h1 className="font-display text-2xl text-text">Admin</h1>
-            <p className="text-sm text-text-muted">Manage members and the recipe catalog</p>
+            <h1 className="text-title-1-semibold text-text-primary">Admin</h1>
+            <p className="text-body-regular text-text-secondary">Manage members and the recipe catalog</p>
           </div>
         </div>
-        <Link href="/recipes" className="text-sm text-accent hover:underline">
+        <Link href="/recipes" className="text-body-regular text-button-ghost-foreground hover:underline">
           Back to cookbook
         </Link>
       </header>
-      <nav className="mb-8 flex gap-4 border-b border-border pb-3 text-sm">
-        <Link href="/admin" className="text-text hover:text-accent">
+      <nav className="mb-8 flex gap-4 border-b border-separator-border pb-3 text-body-regular">
+        <Link href="/admin" className="text-text-primary hover:text-button-ghost-foreground">
           Overview
         </Link>
-        <Link href="/admin/users" className="text-text hover:text-accent">
+        <Link href="/admin/users" className="text-text-primary hover:text-button-ghost-foreground">
           Members
         </Link>
-        <Link href="/admin/recipes" className="text-text hover:text-accent">
+        <Link href="/admin/recipes" className="text-text-primary hover:text-button-ghost-foreground">
           Recipes
         </Link>
-        <Link href="/admin/recipes/pending" className="text-text hover:text-accent">
+        <Link href="/admin/recipes/pending" className="text-text-primary hover:text-button-ghost-foreground">
           Pending recipes
         </Link>
-        <Link href="/admin/recipes/new" className="text-text hover:text-accent">
+        <Link href="/admin/recipes/new" className="text-text-primary hover:text-button-ghost-foreground">
           New recipe
         </Link>
       </nav>

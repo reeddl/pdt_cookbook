@@ -8,7 +8,7 @@ export default async function NewRecipePage() {
 
   return (
     <div>
-      <h2 className="mb-6 font-display text-xl text-text">New recipe</h2>
+      <h2 className="mb-6 text-title-2-semibold text-text-primary">New recipe</h2>
       <RecipeForm
         action={createRecipe}
         submitLabel="Publish recipe"

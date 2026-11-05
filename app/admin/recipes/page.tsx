@@ -14,15 +14,15 @@ export default async function AdminRecipesPage() {
   return (
     <div className="space-y-3">
       {recipes.length === 0 ? (
-        <p className="text-sm text-text-muted">No recipes yet — add the first one.</p>
+        <p className="text-body-regular text-text-secondary">No recipes yet — add the first one.</p>
       ) : (
         recipes.map((recipe) => (
           <Card key={recipe.id} className="flex items-center justify-between p-4">
             <div>
-              <p className="font-medium text-text">{recipe.title}</p>
+              <p className="font-medium text-text-primary">{recipe.title}</p>
               <div className="mt-1 flex items-center gap-2">
                 <Badge>{recipe.category}</Badge>
-                <span className="text-xs text-text-muted">by {recipe.submitterName}</span>
+                <span className="text-caption-1-regular text-text-secondary">by {recipe.submitterName}</span>
               </div>
             </div>
             <div className="flex gap-2">

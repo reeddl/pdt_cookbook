@@ -3,6 +3,7 @@ import { redirect } from "next/navigation";
 import { auth, signOut } from "@/auth";
 import { ShieldLogo } from "@/components/brand/ShieldLogo";
 import { Sidebar } from "@/components/sidebar/Sidebar";
+import { ThemeToggle } from "@/components/application/theme/theme-toggle";
 import { SubmitButton } from "@/components/ui/submit-button";
 import { getSidebarRecipes } from "@/lib/recipes";
 
@@ -17,23 +18,24 @@ export default async function AppLayout({ children }: { children: React.ReactNod
     <div className="flex min-h-screen">
       <Sidebar recipes={recipes} />
       <div className="flex flex-1 flex-col">
-        <header className="flex flex-wrap items-center justify-between gap-3 border-b border-border bg-surface py-3 pr-4 pl-20 sm:pl-6 sm:pr-6">
-          <Link href="/recipes" className="flex items-center gap-2.5 font-display text-lg text-text">
+        <header className="flex flex-wrap items-center justify-between gap-3 border-b border-separator-border bg-background-primary-default py-3 pr-4 pl-20 sm:pl-6 sm:pr-6">
+          <Link href="/recipes" className="flex items-center gap-2.5 text-title-3-semibold text-text-primary">
             <ShieldLogo height={30} preload />
             PDT Cookbook
           </Link>
-          <div className="flex flex-wrap items-center gap-4 text-sm">
-            <Link href="/recipes/submit" className="text-text hover:text-accent">
+          <div className="flex flex-wrap items-center gap-4 text-body-regular">
+            <Link href="/recipes/submit" className="text-text-secondary transition-colors hover:text-text-primary">
               Suggest a recipe
             </Link>
-            <Link href="/profile" className="text-text hover:text-accent">
+            <Link href="/profile" className="text-text-secondary transition-colors hover:text-text-primary">
               {session.user.name}
             </Link>
             {session.user.role === "ADMIN" && (
-              <Link href="/admin" className="text-text hover:text-accent">
+              <Link href="/admin" className="text-text-secondary transition-colors hover:text-text-primary">
                 Admin
               </Link>
             )}
+            <ThemeToggle appearance="segmented" size="small" />
             <form
               action={async () => {
                 "use server";

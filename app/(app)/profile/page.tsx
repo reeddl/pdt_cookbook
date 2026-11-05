@@ -48,7 +48,7 @@ export default async function ProfilePage() {
       </section>
 
       <section className="mt-10">
-        <h2 className="mb-4 font-display text-lg text-text">Profile details</h2>
+        <h2 className="mb-4 text-title-3-semibold text-text-primary">Profile details</h2>
         <form action={updateOwnProfile} className="max-w-md space-y-4">
           <div>
             <Label htmlFor="name">Name</Label>
@@ -78,11 +78,11 @@ export default async function ProfilePage() {
       </section>
 
       <section className="mt-10">
-        <h2 className="mb-4 font-display text-lg text-text">
+        <h2 className="mb-4 text-title-3-semibold text-text-primary">
           Recipes submitted {recipes.length > 0 && `(${recipes.length})`}
         </h2>
         {recipes.length === 0 ? (
-          <p className="text-sm text-text-muted">
+          <p className="text-body-regular text-text-secondary">
             You haven&apos;t submitted a recipe yet.
           </p>
         ) : (
@@ -104,14 +104,14 @@ export default async function ProfilePage() {
       </section>
 
       <section className="mt-10">
-        <h2 className="mb-4 font-display text-lg text-text">Family</h2>
+        <h2 className="mb-4 text-title-3-semibold text-text-primary">Family</h2>
         <FamilyTree bigChain={bigChain} littles={littles} />
       </section>
 
       <section className="mt-10">
-        <h2 className="mb-4 font-display text-lg text-text">My favorites</h2>
+        <h2 className="mb-4 text-title-3-semibold text-text-primary">My favorites</h2>
         {favorites.length === 0 ? (
-          <p className="text-sm text-text-muted">You haven&apos;t favorited any recipes yet.</p>
+          <p className="text-body-regular text-text-secondary">You haven&apos;t favorited any recipes yet.</p>
         ) : (
           <div className="grid gap-5 sm:grid-cols-2">
             {favorites.map(({ recipe }) => (
