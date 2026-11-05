@@ -3,6 +3,7 @@
 import { useMemo, useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { SearchIcon } from "@/components/ui/icons";
 import { cn } from "@/lib/cn";
 
 interface SidebarRecipe {
@@ -15,7 +16,14 @@ export function Sidebar({ recipes }: { recipes: SidebarRecipe[] }) {
   const [query, setQuery] = useState("");
   const [collapsed, setCollapsed] = useState<Record<string, boolean>>({});
   const [mobileOpen, setMobileOpen] = useState(false);
+  const [searchHovered, setSearchHovered] = useState(false);
+  const [searchFocused, setSearchFocused] = useState(false);
   const pathname = usePathname();
+
+  // Collapsed to a circle by default; opens on hover, on keyboard focus, and
+  // stays open while there's a query so results aren't orphaned by a stray
+  // mouse-out. Tapping the circle focuses the input, which covers touch.
+  const searchOpen = searchHovered || searchFocused || query !== "";
 
   const filtered = useMemo(() => {
     const q = query.trim().toLowerCase();
@@ -59,19 +67,35 @@ export function Sidebar({ recipes }: { recipes: SidebarRecipe[] }) {
           mobileOpen ? "translate-x-0" : "-translate-x-full"
         )}
       >
-        <div className="flex items-center justify-between p-4 sm:pt-4">
-          <input
-            type="search"
-            value={query}
-            onChange={(e) => setQuery(e.target.value)}
-            placeholder="Search recipes…"
-            className="w-full rounded-lg border border-border bg-surface px-3 py-2 text-sm text-text placeholder:text-text-muted focus:outline-none focus:ring-2 focus:ring-accent/40"
-          />
+        <div className="flex items-center justify-between gap-2 p-4 sm:pt-4">
+          <div
+            onMouseEnter={() => setSearchHovered(true)}
+            onMouseLeave={() => setSearchHovered(false)}
+            className={cn(
+              "relative flex h-9 items-center transition-[width] duration-300 ease-out",
+              searchOpen ? "w-full" : "w-9"
+            )}
+          >
+            <SearchIcon className="pointer-events-none absolute left-2.5 z-10 text-text-muted" />
+            <input
+              type="search"
+              value={query}
+              onChange={(e) => setQuery(e.target.value)}
+              onFocus={() => setSearchFocused(true)}
+              onBlur={() => setSearchFocused(false)}
+              aria-label="Search recipes"
+              placeholder={searchOpen ? "Search recipes…" : ""}
+              className={cn(
+                "h-9 w-full rounded-full border border-border bg-surface pl-9 text-sm text-text placeholder:text-text-muted focus:outline-none focus:ring-2 focus:ring-accent/40",
+                searchOpen ? "pr-3" : "cursor-pointer pr-0"
+              )}
+            />
+          </div>
           <button
             type="button"
             onClick={() => setMobileOpen(false)}
             aria-label="Close recipe list"
-            className="ml-2 text-text-muted sm:hidden"
+            className="text-text-muted sm:hidden"
           >
             ✕
           </button>

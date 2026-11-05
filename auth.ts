@@ -5,7 +5,30 @@ import { prisma } from "@/lib/prisma";
 import { UserRole, UserStatus } from "@prisma/client";
 
 export const { handlers, signIn, signOut, auth } = NextAuth({
-  adapter: PrismaAdapter(prisma),
+  adapter: {
+    ...PrismaAdapter(prisma),
+    // The default createUser writes `image`/`emailVerified`, which this schema
+    // doesn't have (it uses `avatarUrl` and has no email verification). Map them
+    // here instead of in the `signIn` callback — that callback runs *before* the
+    // adapter's own account-linking step, so creating the user there caused
+    // Auth.js to see an "existing" user with no linked Account and throw
+    // OAuthAccountNotLinked on every first-time sign-in.
+    async createUser({ id, image, emailVerified, ...data }) {
+      const isAdminEmail = data.email === process.env.ADMIN_EMAIL;
+      const user = await prisma.user.create({
+        data: {
+          ...data,
+          name: data.name ?? data.email,
+          avatarUrl: image ?? null,
+          // No approval gate on sign-up — everyone lands straight on the homepage.
+          // Admins can still flip someone to REJECTED to cut off access.
+          status: UserStatus.APPROVED,
+          role: isAdminEmail ? UserRole.ADMIN : UserRole.MEMBER,
+        },
+      });
+      return { ...user, image: user.avatarUrl, emailVerified: null };
+    },
+  },
   providers: [Google],
   session: {
     strategy: "jwt",
@@ -20,24 +43,19 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
 
       const isAdminEmail = user.email === process.env.ADMIN_EMAIL;
 
-      const existing = await prisma.user.findUnique({
-        where: { email: user.email },
-      });
-
-      if (!existing) {
-        await prisma.user.create({
-          data: {
-            email: user.email,
-            name: user.name ?? user.email,
-            avatarUrl: user.image ?? null,
-            status: isAdminEmail ? UserStatus.APPROVED : UserStatus.PENDING,
-            role: isAdminEmail ? UserRole.ADMIN : UserRole.MEMBER,
-          },
-        });
-      } else if (isAdminEmail && (existing.status !== "APPROVED" || existing.role !== "ADMIN")) {
-        await prisma.user.update({
-          where: { id: existing.id },
+      // Safety net for an existing user whose email later becomes ADMIN_EMAIL —
+      // first-time creation already sets status/role via adapter.createUser above.
+      if (isAdminEmail) {
+        await prisma.user.updateMany({
+          where: { email: user.email, NOT: { status: "APPROVED", role: "ADMIN" } },
           data: { status: UserStatus.APPROVED, role: UserRole.ADMIN },
+        });
+      } else {
+        // Carry forward the removal of the approval gate to accounts created
+        // before this change — REJECTED accounts stay blocked.
+        await prisma.user.updateMany({
+          where: { email: user.email, status: "PENDING" },
+          data: { status: UserStatus.APPROVED },
         });
       }
 

@@ -2,7 +2,7 @@ import { notFound } from "next/navigation";
 import { prisma } from "@/lib/prisma";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Button } from "@/components/ui/button";
+import { SubmitButton } from "@/components/ui/submit-button";
 import { updateMember } from "../../actions";
 
 export default async function EditMemberPage({
@@ -78,7 +78,7 @@ export default async function EditMemberPage({
             <option value="ADMIN">Admin</option>
           </select>
         </div>
-        <Button type="submit">Save changes</Button>
+        <SubmitButton pendingLabel="Saving…">Save changes</SubmitButton>
       </form>
     </div>
   );

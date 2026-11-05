@@ -1,4 +1,7 @@
+import Link from "next/link";
 import { auth } from "@/auth";
+import { isProfileComplete } from "@/lib/authz";
+import { getTagSuggestions } from "@/lib/recipes";
 import { RecipeForm } from "@/components/recipes/RecipeForm";
 import { submitRecipe } from "./actions";
 
@@ -9,6 +12,10 @@ export default async function SubmitRecipePage({
 }) {
   const session = await auth();
   const { submitted } = await searchParams;
+  const [canSubmit, tagSuggestions] = await Promise.all([
+    session ? isProfileComplete(session.user.id) : false,
+    getTagSuggestions(),
+  ]);
 
   return (
     <div>
@@ -23,11 +30,22 @@ export default async function SubmitRecipePage({
         </div>
       )}
 
-      <RecipeForm
-        action={submitRecipe}
-        submitLabel="Submit for review"
-        defaultValues={{ submitterName: session?.user.name ?? "" }}
-      />
+      {canSubmit ? (
+        <RecipeForm
+          action={submitRecipe}
+          submitLabel="Submit for review"
+          pendingLabel="Submitting…"
+          tagSuggestions={tagSuggestions}
+          defaultValues={{ submitterName: session?.user.name ?? "" }}
+        />
+      ) : (
+        <p className="text-sm text-text-muted">
+          <Link href="/profile" className="text-accent underline">
+            Add your bond number, pledge class, and graduation year
+          </Link>{" "}
+          to your profile before submitting a recipe.
+        </p>
+      )}
     </div>
   );
 }

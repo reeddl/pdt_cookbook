@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { auth } from "@/auth";
+import { ShieldLogo } from "@/components/brand/ShieldLogo";
 
 export default async function AdminLayout({ children }: { children: React.ReactNode }) {
   const session = await auth();
@@ -10,9 +11,12 @@ export default async function AdminLayout({ children }: { children: React.ReactN
   return (
     <div className="mx-auto flex min-h-screen w-full max-w-5xl flex-col px-6 py-8">
       <header className="mb-8 flex items-center justify-between">
-        <div>
-          <h1 className="font-display text-2xl text-text">Admin</h1>
-          <p className="text-sm text-text-muted">Manage members and the recipe catalog</p>
+        <div className="flex items-center gap-3">
+          <ShieldLogo height={38} preload />
+          <div>
+            <h1 className="font-display text-2xl text-text">Admin</h1>
+            <p className="text-sm text-text-muted">Manage members and the recipe catalog</p>
+          </div>
         </div>
         <Link href="/recipes" className="text-sm text-accent hover:underline">
           Back to cookbook

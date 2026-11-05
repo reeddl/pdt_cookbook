@@ -1,10 +1,11 @@
 "use client";
 
-import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { SubmitButton } from "@/components/ui/submit-button";
 import { Textarea } from "@/components/ui/textarea";
 import { PhotoUpload } from "@/components/recipes/PhotoUpload";
+import { TagInput } from "@/components/recipes/TagInput";
 
 export interface RecipeFormDefaults {
   title?: string;
@@ -20,9 +21,18 @@ interface RecipeFormProps {
   action: (formData: FormData) => void | Promise<void>;
   defaultValues?: RecipeFormDefaults;
   submitLabel: string;
+  pendingLabel?: string;
+  /** Tags already used in the cookbook, offered as autocomplete options. */
+  tagSuggestions?: string[];
 }
 
-export function RecipeForm({ action, defaultValues, submitLabel }: RecipeFormProps) {
+export function RecipeForm({
+  action,
+  defaultValues,
+  submitLabel,
+  pendingLabel = "Saving…",
+  tagSuggestions,
+}: RecipeFormProps) {
   return (
     <form action={action} className="space-y-5">
       <div>
@@ -42,12 +52,13 @@ export function RecipeForm({ action, defaultValues, submitLabel }: RecipeFormPro
           />
         </div>
         <div>
-          <Label htmlFor="tags">Tags (comma-separated)</Label>
-          <Input
+          <Label htmlFor="tags">Tags</Label>
+          <TagInput
             id="tags"
             name="tags"
             placeholder="e.g. quick, vegetarian"
-            defaultValue={defaultValues?.tags?.join(", ")}
+            defaultValue={defaultValues?.tags}
+            suggestions={tagSuggestions}
           />
         </div>
       </div>
@@ -89,7 +100,7 @@ export function RecipeForm({ action, defaultValues, submitLabel }: RecipeFormPro
         <PhotoUpload name="photoUrl" defaultValue={defaultValues?.photoUrl} />
       </div>
 
-      <Button type="submit">{submitLabel}</Button>
+      <SubmitButton pendingLabel={pendingLabel}>{submitLabel}</SubmitButton>
     </form>
   );
 }

@@ -1,7 +1,8 @@
 import { auth, signOut } from "@/auth";
 import { redirect } from "next/navigation";
-import { Button } from "@/components/ui/button";
+import { ShieldLogo } from "@/components/brand/ShieldLogo";
 import { Card } from "@/components/ui/card";
+import { SubmitButton } from "@/components/ui/submit-button";
 
 export default async function PendingPage() {
   const session = await auth();
@@ -13,6 +14,9 @@ export default async function PendingPage() {
   return (
     <div className="flex min-h-screen flex-1 items-center justify-center px-4">
       <Card className="w-full max-w-md p-8 text-center">
+        <div className="mb-4 flex justify-center">
+          <ShieldLogo height={64} preload />
+        </div>
         <h1 className="font-display text-2xl text-text">
           {rejected ? "Access denied" : "Awaiting approval"}
         </h1>
@@ -28,9 +32,9 @@ export default async function PendingPage() {
             await signOut({ redirectTo: "/login" });
           }}
         >
-          <Button type="submit" variant="secondary" className="w-full">
+          <SubmitButton variant="secondary" className="w-full" pendingLabel="Signing out…">
             Sign out
-          </Button>
+          </SubmitButton>
         </form>
       </Card>
     </div>

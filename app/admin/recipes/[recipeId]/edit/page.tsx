@@ -1,5 +1,6 @@
 import { notFound } from "next/navigation";
 import { prisma } from "@/lib/prisma";
+import { getTagSuggestions } from "@/lib/recipes";
 import { RecipeForm } from "@/components/recipes/RecipeForm";
 import { updateRecipe } from "../../actions";
 
@@ -9,7 +10,10 @@ export default async function EditRecipePage({
   params: Promise<{ recipeId: string }>;
 }) {
   const { recipeId } = await params;
-  const recipe = await prisma.recipe.findUnique({ where: { id: recipeId } });
+  const [recipe, tagSuggestions] = await Promise.all([
+    prisma.recipe.findUnique({ where: { id: recipeId } }),
+    getTagSuggestions(),
+  ]);
   if (!recipe) notFound();
 
   return (
@@ -18,6 +22,7 @@ export default async function EditRecipePage({
       <RecipeForm
         action={updateRecipe.bind(null, recipe.id)}
         submitLabel="Save changes"
+        tagSuggestions={tagSuggestions}
         defaultValues={{
           title: recipe.title,
           category: recipe.category,

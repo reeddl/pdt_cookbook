@@ -2,10 +2,10 @@
 
 import { revalidatePath } from "next/cache";
 import { prisma } from "@/lib/prisma";
-import { requireApproved } from "@/lib/authz";
+import { requireAuth, requireProfileComplete } from "@/lib/authz";
 
 export async function addComment(recipeId: string, formData: FormData) {
-  const session = await requireApproved();
+  const session = await requireProfileComplete();
   const body = formData.get("body");
   if (typeof body !== "string" || !body.trim()) return;
 
@@ -21,7 +21,7 @@ export async function addComment(recipeId: string, formData: FormData) {
 }
 
 export async function toggleFavorite(recipeId: string) {
-  const session = await requireApproved();
+  const session = await requireAuth();
 
   const existing = await prisma.favorite.findUnique({
     where: { userId_recipeId: { userId: session.user.id, recipeId } },

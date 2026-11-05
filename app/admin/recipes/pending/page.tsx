@@ -1,7 +1,7 @@
 import { prisma } from "@/lib/prisma";
 import { Card, Badge } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { SubmitButton } from "@/components/ui/submit-button";
 import { approveRecipe, rejectRecipe } from "../actions";
 
 export default async function PendingRecipesPage() {
@@ -41,15 +41,15 @@ export default async function PendingRecipesPage() {
             </div>
             <div className="mt-4 flex items-center gap-2">
               <form action={approveRecipe.bind(null, recipe.id)}>
-                <Button type="submit" variant="primary">
+                <SubmitButton variant="primary" pendingLabel="Approving…">
                   Approve
-                </Button>
+                </SubmitButton>
               </form>
               <form action={rejectRecipe.bind(null, recipe.id)} className="flex items-center gap-2">
                 <Input name="reason" placeholder="Rejection reason (optional)" className="w-64" />
-                <Button type="submit" variant="danger">
+                <SubmitButton variant="danger" pendingLabel="Rejecting…">
                   Reject
-                </Button>
+                </SubmitButton>
               </form>
             </div>
           </Card>

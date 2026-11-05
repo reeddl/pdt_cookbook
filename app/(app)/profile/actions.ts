@@ -2,11 +2,11 @@
 
 import { revalidatePath } from "next/cache";
 import { prisma } from "@/lib/prisma";
-import { requireApproved } from "@/lib/authz";
+import { requireAuth } from "@/lib/authz";
 import { profileInputSchema } from "@/lib/validations/profile";
 
 export async function updateOwnProfile(formData: FormData) {
-  const session = await requireApproved();
+  const session = await requireAuth();
 
   const data = profileInputSchema.parse({
     name: formData.get("name"),

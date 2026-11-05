@@ -1,4 +1,4 @@
-import { Button } from "@/components/ui/button";
+import { SubmitButton } from "@/components/ui/submit-button";
 import { toggleFavorite } from "@/app/(app)/recipes/[recipeId]/actions";
 
 export function FavoriteButton({
@@ -10,9 +10,13 @@ export function FavoriteButton({
 }) {
   return (
     <form action={toggleFavorite.bind(null, recipeId)}>
-      <Button type="submit" variant={isFavorited ? "primary" : "secondary"}>
+      <SubmitButton
+        variant={isFavorited ? "primary" : "secondary"}
+        className="whitespace-nowrap"
+        pendingLabel={isFavorited ? "Removing…" : "Saving…"}
+      >
         {isFavorited ? "★ Favorited" : "☆ Favorite"}
-      </Button>
+      </SubmitButton>
     </form>
   );
 }

@@ -2,11 +2,11 @@
 
 import { redirect } from "next/navigation";
 import { prisma } from "@/lib/prisma";
-import { requireApproved } from "@/lib/authz";
+import { requireProfileComplete } from "@/lib/authz";
 import { recipeInputSchema } from "@/lib/validations/recipe";
 
 export async function submitRecipe(formData: FormData) {
-  const session = await requireApproved();
+  const session = await requireProfileComplete();
 
   const data = recipeInputSchema.parse({
     title: formData.get("title"),

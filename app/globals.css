@@ -32,3 +32,64 @@ body {
   background: var(--color-bg);
   color: var(--color-text);
 }
+
+/* --- Shield loading animation ---------------------------------------- */
+
+@keyframes pdt-twinkle {
+  0%,
+  100% {
+    opacity: 0.25;
+    transform: scale(0.8);
+  }
+  45% {
+    opacity: 1;
+    transform: scale(1.15);
+  }
+}
+
+@keyframes pdt-float {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-5px);
+  }
+}
+
+@keyframes pdt-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* Each star scales around its own centre rather than the SVG origin. */
+.pdt-star {
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: pdt-twinkle 1.6s ease-in-out infinite;
+}
+
+.pdt-shield-float {
+  animation: pdt-float 2.8s ease-in-out infinite;
+}
+
+.pdt-spin {
+  animation: pdt-spin 0.7s linear infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .pdt-star,
+  .pdt-shield-float {
+    animation-duration: 0.001ms;
+    animation-iteration-count: 1;
+  }
+  .pdt-star {
+    opacity: 1;
+  }
+  /* The spinner still turns — it is the only "working on it" signal on a
+     disabled button — just slowly enough not to be distracting. */
+  .pdt-spin {
+    animation-duration: 2s;
+  }
+}

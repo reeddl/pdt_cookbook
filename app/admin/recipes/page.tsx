@@ -2,6 +2,7 @@ import Link from "next/link";
 import { prisma } from "@/lib/prisma";
 import { Card, Badge } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { SubmitButton } from "@/components/ui/submit-button";
 import { deleteRecipe } from "./actions";
 
 export default async function AdminRecipesPage() {
@@ -29,9 +30,9 @@ export default async function AdminRecipesPage() {
                 <Button variant="secondary">Edit</Button>
               </Link>
               <form action={deleteRecipe.bind(null, recipe.id)}>
-                <Button type="submit" variant="danger">
+                <SubmitButton variant="danger" pendingLabel="Deleting…">
                   Delete
-                </Button>
+                </SubmitButton>
               </form>
             </div>
           </Card>

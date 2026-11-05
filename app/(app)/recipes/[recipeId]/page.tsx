@@ -1,6 +1,8 @@
+import Link from "next/link";
 import { notFound } from "next/navigation";
 import { prisma } from "@/lib/prisma";
 import { auth } from "@/auth";
+import { isProfileComplete } from "@/lib/authz";
 import { Badge } from "@/components/ui/card";
 import { FavoriteButton } from "@/components/favorites/FavoriteButton";
 import { CommentThread } from "@/components/comments/CommentThread";
@@ -13,11 +15,11 @@ export default async function RecipeDetailPage({
   const { recipeId } = await params;
   const session = await auth();
 
-  const [recipe, comments, favorite] = await Promise.all([
+  const [recipe, comments, favorite, canComment] = await Promise.all([
     prisma.recipe.findUnique({ where: { id: recipeId } }),
     prisma.comment.findMany({
       where: { recipeId },
-      include: { user: { select: { name: true, avatarUrl: true } } },
+      include: { user: { select: { id: true, name: true, avatarUrl: true } } },
       orderBy: { createdAt: "asc" },
     }),
     session
@@ -25,6 +27,7 @@ export default async function RecipeDetailPage({
           where: { userId_recipeId: { userId: session.user.id, recipeId } },
         })
       : null,
+    session ? isProfileComplete(session.user.id) : false,
   ]);
 
   if (!recipe || recipe.status !== "PUBLISHED") notFound();
@@ -49,7 +52,19 @@ export default async function RecipeDetailPage({
       <div className="mt-3 flex items-start justify-between gap-4">
         <div>
           <h1 className="font-display text-3xl text-text">{recipe.title}</h1>
-          <p className="mt-1 text-sm text-text-muted">Submitted by {recipe.submitterName}</p>
+          <p className="mt-1 text-sm text-text-muted">
+            Submitted by{" "}
+            {recipe.submittedById ? (
+              <Link
+                href={`/profile/${recipe.submittedById}`}
+                className="text-accent hover:underline"
+              >
+                {recipe.submitterName}
+              </Link>
+            ) : (
+              recipe.submitterName
+            )}
+          </p>
         </div>
         <FavoriteButton recipeId={recipe.id} isFavorited={Boolean(favorite)} />
       </div>
@@ -72,7 +87,7 @@ export default async function RecipeDetailPage({
         </section>
       </div>
 
-      <CommentThread recipeId={recipe.id} comments={comments} />
+      <CommentThread recipeId={recipe.id} comments={comments} canComment={canComment} />
     </article>
   );
 }

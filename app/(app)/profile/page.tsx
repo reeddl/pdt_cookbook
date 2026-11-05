@@ -1,20 +1,23 @@
-import { redirect } from "next/navigation";
+import { notFound, redirect } from "next/navigation";
 import { auth } from "@/auth";
 import { prisma } from "@/lib/prisma";
 import { RecipeCard } from "@/components/recipes/RecipeCard";
 import { FamilyTree } from "@/components/family/FamilyTree";
+import { FoodieScoreCard } from "@/components/profile/FoodieScoreCard";
+import { ProfileHeader } from "@/components/profile/ProfileHeader";
 import { getFamilyMembers, getBigChain, getLittlesTree } from "@/lib/family";
+import { getMemberProfile } from "@/lib/profile";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Button } from "@/components/ui/button";
+import { SubmitButton } from "@/components/ui/submit-button";
 import { updateOwnProfile } from "./actions";
 
 export default async function ProfilePage() {
   const session = await auth();
   if (!session) redirect("/login");
 
-  const [user, favorites, members] = await Promise.all([
-    prisma.user.findUniqueOrThrow({ where: { id: session.user.id } }),
+  const [profile, favorites, members] = await Promise.all([
+    getMemberProfile(session.user.id, { includeUnpublished: true }),
     prisma.favorite.findMany({
       where: { userId: session.user.id },
       include: { recipe: true },
@@ -23,15 +26,28 @@ export default async function ProfilePage() {
     getFamilyMembers(),
   ]);
 
+  if (!profile) notFound();
+
+  const { user, recipes, parts, score } = profile;
   const bigChain = getBigChain(user.id, members);
   const littles = getLittlesTree(user.id, members);
 
   return (
     <div>
-      <h1 className="font-display text-2xl text-text">{user.name}</h1>
-      <p className="text-sm text-text-muted">{user.email}</p>
+      <ProfileHeader
+        name={user.name}
+        email={user.email}
+        avatarUrl={user.avatarUrl}
+        pledgeClass={user.pledgeClass}
+        graduationYear={user.graduationYear}
+        bondNumber={user.bondNumber}
+      />
 
       <section className="mt-8">
+        <FoodieScoreCard score={score} parts={parts} />
+      </section>
+
+      <section className="mt-10">
         <h2 className="mb-4 font-display text-lg text-text">Profile details</h2>
         <form action={updateOwnProfile} className="max-w-md space-y-4">
           <div>
@@ -57,8 +73,34 @@ export default async function ProfilePage() {
               defaultValue={user.graduationYear ?? ""}
             />
           </div>
-          <Button type="submit">Save changes</Button>
+          <SubmitButton pendingLabel="Saving…">Save changes</SubmitButton>
         </form>
+      </section>
+
+      <section className="mt-10">
+        <h2 className="mb-4 font-display text-lg text-text">
+          Recipes submitted {recipes.length > 0 && `(${recipes.length})`}
+        </h2>
+        {recipes.length === 0 ? (
+          <p className="text-sm text-text-muted">
+            You haven&apos;t submitted a recipe yet.
+          </p>
+        ) : (
+          <div className="grid gap-5 sm:grid-cols-2">
+            {recipes.map((recipe) => (
+              <RecipeCard
+                key={recipe.id}
+                id={recipe.id}
+                title={recipe.title}
+                category={recipe.category}
+                photoUrl={recipe.photoUrl}
+                submitterName={recipe.submitterName}
+                submittedById={recipe.submittedById}
+                status={recipe.status}
+              />
+            ))}
+          </div>
+        )}
       </section>
 
       <section className="mt-10">
@@ -80,6 +122,7 @@ export default async function ProfilePage() {
                 category={recipe.category}
                 photoUrl={recipe.photoUrl}
                 submitterName={recipe.submitterName}
+                submittedById={recipe.submittedById}
               />
             ))}
           </div>

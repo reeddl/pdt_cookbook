@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { upload } from "@vercel/blob/client";
+import { Spinner } from "@/components/ui/spinner";
 
 interface PhotoUploadProps {
   name: string;
@@ -49,10 +50,16 @@ export function PhotoUpload({ name, defaultValue }: PhotoUploadProps) {
           type="file"
           accept="image/png,image/jpeg,image/webp,image/gif"
           onChange={handleFileChange}
-          className="block w-full text-sm text-text-muted file:mr-3 file:rounded-lg file:border-0 file:bg-sidebar file:px-3 file:py-2 file:text-sm file:font-medium file:text-text hover:file:bg-border"
+          disabled={uploading}
+          className="block w-full text-sm text-text-muted file:mr-3 file:rounded-lg file:border-0 file:bg-sidebar file:px-3 file:py-2 file:text-sm file:font-medium file:text-text hover:file:bg-border disabled:opacity-50"
         />
       </label>
-      {uploading && <p className="mt-1 text-xs text-text-muted">Uploading…</p>}
+      {uploading && (
+        <p className="mt-1 flex items-center gap-1.5 text-xs text-text-muted">
+          <Spinner className="h-3 w-3" />
+          Uploading…
+        </p>
+      )}
       {error && <p className="mt-1 text-xs text-danger">{error}</p>}
     </div>
   );

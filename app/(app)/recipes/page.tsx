@@ -21,6 +21,7 @@ export default async function RecipesPage() {
               category={recipe.category}
               photoUrl={recipe.photoUrl}
               submitterName={recipe.submitterName}
+              submittedById={recipe.submittedById}
             />
           ))}
         </div>

@@ -1,8 +1,9 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { auth, signOut } from "@/auth";
+import { ShieldLogo } from "@/components/brand/ShieldLogo";
 import { Sidebar } from "@/components/sidebar/Sidebar";
-import { Button } from "@/components/ui/button";
+import { SubmitButton } from "@/components/ui/submit-button";
 import { getSidebarRecipes } from "@/lib/recipes";
 
 export default async function AppLayout({ children }: { children: React.ReactNode }) {
@@ -17,7 +18,8 @@ export default async function AppLayout({ children }: { children: React.ReactNod
       <Sidebar recipes={recipes} />
       <div className="flex flex-1 flex-col">
         <header className="flex flex-wrap items-center justify-between gap-3 border-b border-border bg-surface py-3 pr-4 pl-20 sm:pl-6 sm:pr-6">
-          <Link href="/recipes" className="font-display text-lg text-text">
+          <Link href="/recipes" className="flex items-center gap-2.5 font-display text-lg text-text">
+            <ShieldLogo height={30} preload />
             PDT Cookbook
           </Link>
           <div className="flex flex-wrap items-center gap-4 text-sm">
@@ -38,9 +40,9 @@ export default async function AppLayout({ children }: { children: React.ReactNod
                 await signOut({ redirectTo: "/login" });
               }}
             >
-              <Button type="submit" variant="ghost">
+              <SubmitButton variant="ghost" pendingLabel="Signing out…">
                 Sign out
-              </Button>
+              </SubmitButton>
             </form>
           </div>
         </header>
