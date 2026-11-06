@@ -6,6 +6,7 @@ import { isProfileComplete } from "@/lib/authz";
 import { Badge } from "@/components/ui/card";
 import { FavoriteButton } from "@/components/favorites/FavoriteButton";
 import { CommentThread } from "@/components/comments/CommentThread";
+import { parseSteps } from "@/lib/recipeFormat";
 
 export default async function RecipeDetailPage({
   params,
@@ -83,7 +84,24 @@ export default async function RecipeDetailPage({
         </section>
         <section>
           <h2 className="mb-2 text-title-3-semibold text-text-primary">Instructions</h2>
-          <p className="whitespace-pre-line text-body-regular text-text-primary">{recipe.instructions}</p>
+          {(() => {
+            const steps = parseSteps(recipe.instructions);
+            // Older recipes may be one free-text paragraph; keep those as-is.
+            if (steps.length < 2) {
+              return (
+                <p className="whitespace-pre-line text-body-regular text-text-primary">
+                  {recipe.instructions}
+                </p>
+              );
+            }
+            return (
+              <ol className="list-decimal space-y-3 pl-5 text-body-regular text-text-primary">
+                {steps.map((s) => (
+                  <li key={s.id}>{s.text}</li>
+                ))}
+              </ol>
+            );
+          })()}
         </section>
       </div>
 
