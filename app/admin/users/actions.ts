@@ -31,7 +31,8 @@ export async function updateMember(userId: string, formData: FormData) {
     graduationYear: formData.get("graduationYear") ?? "",
   });
 
-  const role = formData.get("role") === "ADMIN" ? "ADMIN" : "MEMBER";
+  const roleRaw = formData.get("role");
+  const role = roleRaw === "ADMIN" || roleRaw === "MODERATOR" ? roleRaw : "MEMBER";
   const bigIdRaw = formData.get("bigId");
   let bigId = typeof bigIdRaw === "string" && bigIdRaw ? bigIdRaw : null;
 

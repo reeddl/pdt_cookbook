@@ -5,6 +5,7 @@ import { ShieldLogo } from "@/components/brand/ShieldLogo";
 import { Sidebar } from "@/components/sidebar/Sidebar";
 import { ThemeToggle } from "@/components/application/theme/theme-toggle";
 import { SubmitButton } from "@/components/ui/submit-button";
+import { isStaff } from "@/lib/authz";
 import { getSidebarRecipes } from "@/lib/recipes";
 
 export default async function AppLayout({ children }: { children: React.ReactNode }) {
@@ -30,9 +31,9 @@ export default async function AppLayout({ children }: { children: React.ReactNod
             <Link href="/profile" className="text-text-secondary transition-colors hover:text-text-primary">
               {session.user.name}
             </Link>
-            {session.user.role === "ADMIN" && (
+            {isStaff(session.user.role) && (
               <Link href="/admin" className="text-text-secondary transition-colors hover:text-text-primary">
-                Admin
+                {session.user.role === "ADMIN" ? "Admin" : "Moderation"}
               </Link>
             )}
             <ThemeToggle appearance="segmented" size="small" />

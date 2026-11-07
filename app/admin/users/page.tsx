@@ -1,3 +1,4 @@
+import { requireAdminPage } from "@/lib/authz";
 import Link from "next/link";
 import { prisma } from "@/lib/prisma";
 import { Card, Badge } from "@/components/ui/card";
@@ -6,6 +7,7 @@ import { SubmitButton } from "@/components/ui/submit-button";
 import { approveUser, rejectUser } from "./actions";
 
 export default async function AdminUsersPage() {
+  await requireAdminPage();
   const [pending, roster] = await Promise.all([
     prisma.user.findMany({
       where: { status: "PENDING" },

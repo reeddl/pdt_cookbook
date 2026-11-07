@@ -1,5 +1,16 @@
 import { auth } from "@/auth";
+import { redirect } from "next/navigation";
+import type { UserRole } from "@prisma/client";
 import { prisma } from "@/lib/prisma";
+
+/** ADMIN and MODERATOR are "staff": they can use the review/moderation tools. */
+export function isStaff(role: UserRole | undefined): boolean {
+  return role === "ADMIN" || role === "MODERATOR";
+}
+
+export function isAdmin(role: UserRole | undefined): boolean {
+  return role === "ADMIN";
+}
 
 export async function requireAuth() {
   const session = await auth();
@@ -32,5 +43,22 @@ export async function requireAdmin() {
   if (session.user.role !== "ADMIN") {
     throw new Error("Not authorized: admin only");
   }
+  return session;
+}
+
+/** Recipe review and comment moderation: admins and moderators. */
+export async function requireStaff() {
+  const session = await requireAuth();
+  if (!isStaff(session.user.role)) {
+    throw new Error("Not authorized: staff only");
+  }
+  return session;
+}
+
+/** Page-level guard for admin-only screens (members, recipe catalog editing). */
+export async function requireAdminPage() {
+  const session = await auth();
+  if (!session) redirect("/login");
+  if (!isAdmin(session.user.role)) redirect("/admin");
   return session;
 }

@@ -123,11 +123,22 @@ created as `PENDING` and needs to be approved from `/admin/users`.
 ## Project structure
 
 - `app/(app)/` — the gated member-facing shell (sidebar, recipes, profile)
-- `app/admin/` — admin-only dashboard (user approval, recipe CRUD, submission queue)
+- `app/admin/` — staff dashboard. Admins get everything (member approval and roles, recipe CRUD, submission queue, comments). Moderators get the overview, the recipe submission queue, and comment moderation only.
 - `app/login`, `app/pending` — public sign-in and awaiting-approval pages
-- `proxy.ts` — route gating (redirects unauthenticated/unapproved/non-admin requests)
+- `proxy.ts` — route gating (redirects unauthenticated/unapproved requests; limits `/admin` by role)
 - `auth.ts` — Auth.js configuration (Google provider, approval bootstrap logic)
 - `prisma/schema.prisma` — data model
 - `lib/` — Prisma client, auth helpers, validation schemas, family-tree logic
 - `components/` — UI primitives and feature components (sidebar, recipes, comments,
   favorites, family tree, admin tables)
+
+## Roles
+
+| Role | Can do |
+| --- | --- |
+| Member | Browse, comment, favorite, suggest recipes (after admin approval of their account) |
+| Moderator | Everything a member can, plus approve/reject recipe submissions and delete any comment (`/admin`, `/admin/recipes/pending`, `/admin/comments`) |
+| Admin | Everything, plus approve members, change roles, and create/edit/delete recipes |
+
+Admins assign the Moderator role from `/admin/users` → Edit. Role changes can take up to an hour to appear for a
+signed-in user (the role is cached in their session) unless they sign out and back in.

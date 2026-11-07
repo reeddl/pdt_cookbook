@@ -1,3 +1,4 @@
+import { requireAdminPage } from "@/lib/authz";
 import Link from "next/link";
 import { prisma } from "@/lib/prisma";
 import { Card, Badge } from "@/components/ui/card";
@@ -6,6 +7,7 @@ import { SubmitButton } from "@/components/ui/submit-button";
 import { deleteRecipe } from "./actions";
 
 export default async function AdminRecipesPage() {
+  await requireAdminPage();
   const recipes = await prisma.recipe.findMany({
     where: { status: "PUBLISHED" },
     orderBy: { title: "asc" },
