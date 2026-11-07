@@ -1,3 +1,4 @@
+import { requireAdminPage } from "@/lib/authz";
 import { notFound } from "next/navigation";
 import { prisma } from "@/lib/prisma";
 import { getTagSuggestions } from "@/lib/recipes";
@@ -9,6 +10,7 @@ export default async function EditRecipePage({
 }: {
   params: Promise<{ recipeId: string }>;
 }) {
+  await requireAdminPage();
   const { recipeId } = await params;
   const [recipe, tagSuggestions] = await Promise.all([
     prisma.recipe.findUnique({ where: { id: recipeId } }),

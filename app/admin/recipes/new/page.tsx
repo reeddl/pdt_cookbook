@@ -1,9 +1,11 @@
+import { requireAdminPage } from "@/lib/authz";
 import { auth } from "@/auth";
 import { getTagSuggestions } from "@/lib/recipes";
 import { RecipeForm } from "@/components/recipes/RecipeForm";
 import { createRecipe } from "../actions";
 
 export default async function NewRecipePage() {
+  await requireAdminPage();
   const [session, tagSuggestions] = await Promise.all([auth(), getTagSuggestions()]);
 
   return (

@@ -2,7 +2,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { prisma } from "@/lib/prisma";
 import { auth } from "@/auth";
-import { isProfileComplete } from "@/lib/authz";
+import { isProfileComplete, isStaff } from "@/lib/authz";
 import { Badge } from "@/components/ui/card";
 import { FavoriteButton } from "@/components/favorites/FavoriteButton";
 import { CommentThread } from "@/components/comments/CommentThread";
@@ -87,7 +87,11 @@ export default async function RecipeDetailPage({
         </section>
       </div>
 
-      <CommentThread recipeId={recipe.id} comments={comments} canComment={canComment} />
+      <CommentThread
+        recipeId={recipe.id}
+        comments={comments} canComment={canComment}
+        canModerate={isStaff(session?.user.role)}
+      />
     </article>
   );
 }

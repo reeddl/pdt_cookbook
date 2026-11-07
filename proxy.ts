@@ -20,8 +20,17 @@ export async function proxy(request: NextRequest) {
     return NextResponse.redirect(new URL("/pending", request.nextUrl.origin));
   }
 
-  if (pathname.startsWith("/admin") && role !== "ADMIN") {
-    return NextResponse.redirect(new URL("/recipes", request.nextUrl.origin));
+  if (pathname.startsWith("/admin")) {
+    if (role === "ADMIN") return NextResponse.next();
+    // Moderators get the overview plus the review and comment queues only.
+    const moderatorPaths = ["/admin", "/admin/recipes/pending", "/admin/comments"];
+    const allowed =
+      role === "MODERATOR" &&
+      moderatorPaths.some((p) => pathname === p || (p !== "/admin" && pathname.startsWith(p + "/")));
+    if (!allowed) {
+      const target = role === "MODERATOR" ? "/admin" : "/recipes";
+      return NextResponse.redirect(new URL(target, request.nextUrl.origin));
+    }
   }
 
   if (pathname === "/login") {

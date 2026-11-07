@@ -2,6 +2,7 @@ import Link from "next/link";
 import { Textarea } from "@/components/ui/textarea";
 import { SubmitButton } from "@/components/ui/submit-button";
 import { addComment } from "@/app/(app)/recipes/[recipeId]/actions";
+import { deleteComment } from "@/app/admin/comments/actions";
 
 interface CommentItem {
   id: string;
@@ -14,10 +15,13 @@ export function CommentThread({
   recipeId,
   comments,
   canComment,
+  canModerate = false,
 }: {
   recipeId: string;
   comments: CommentItem[];
   canComment: boolean;
+  /** Staff can remove any comment. */
+  canModerate?: boolean;
 }) {
   return (
     <section className="mt-10">
@@ -65,6 +69,13 @@ export function CommentThread({
                 <span className="text-caption-1-regular text-text-secondary">
                   {comment.createdAt.toLocaleDateString()}
                 </span>
+                {canModerate && (
+                  <form action={deleteComment.bind(null, comment.id)} className="ml-auto">
+                    <SubmitButton variant="ghost" className="h-8" pendingLabel="Deleting…">
+                      Delete
+                    </SubmitButton>
+                  </form>
+                )}
               </div>
               <p className="mt-1 whitespace-pre-line text-body-regular text-text-primary">{comment.body}</p>
             </li>

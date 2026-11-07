@@ -16,6 +16,7 @@ enum UserStatus {
 
 enum UserRole {
   MEMBER
+  MODERATOR
   ADMIN
 }
 

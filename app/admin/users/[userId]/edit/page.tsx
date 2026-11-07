@@ -1,3 +1,4 @@
+import { requireAdminPage } from "@/lib/authz";
 import { notFound } from "next/navigation";
 import { prisma } from "@/lib/prisma";
 import { Input } from "@/components/ui/input";
@@ -10,6 +11,7 @@ export default async function EditMemberPage({
 }: {
   params: Promise<{ userId: string }>;
 }) {
+  await requireAdminPage();
   const { userId } = await params;
 
   const [user, otherMembers] = await Promise.all([
@@ -75,6 +77,7 @@ export default async function EditMemberPage({
             className="w-full rounded-2lg bg-background-tertiary-default px-3 py-2 text-body-regular text-text-primary ring-2 ring-inset ring-transparent outline-none hover:ring-border-button-hover focus:ring-border-button-active"
           >
             <option value="MEMBER">Member</option>
+            <option value="MODERATOR">Moderator</option>
             <option value="ADMIN">Admin</option>
           </select>
         </div>

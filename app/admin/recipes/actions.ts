@@ -3,7 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { prisma } from "@/lib/prisma";
-import { requireAdmin } from "@/lib/authz";
+import { requireAdmin, requireStaff } from "@/lib/authz";
 import { recipeInputSchema } from "@/lib/validations/recipe";
 
 function parseRecipeFormData(formData: FormData) {
@@ -61,7 +61,7 @@ export async function deleteRecipe(recipeId: string) {
 }
 
 export async function approveRecipe(recipeId: string) {
-  const session = await requireAdmin();
+  const session = await requireStaff();
   await prisma.recipe.update({
     where: { id: recipeId },
     data: {
@@ -76,7 +76,7 @@ export async function approveRecipe(recipeId: string) {
 }
 
 export async function rejectRecipe(recipeId: string, formData: FormData) {
-  const session = await requireAdmin();
+  const session = await requireStaff();
   const reason = formData.get("reason");
   await prisma.recipe.update({
     where: { id: recipeId },
