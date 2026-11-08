@@ -5,7 +5,10 @@ import { ShieldLogo } from "@/components/brand/ShieldLogo";
 import { Sidebar } from "@/components/sidebar/Sidebar";
 import { ThemeToggle } from "@/components/application/theme/theme-toggle";
 import { SubmitButton } from "@/components/ui/submit-button";
+import { LevelBadge } from "@/components/level/LevelBadge";
 import { isStaff } from "@/lib/authz";
+import { prisma } from "@/lib/prisma";
+import { awardDailyLogin } from "@/lib/xp";
 import { getSidebarRecipes } from "@/lib/recipes";
 
 export default async function AppLayout({ children }: { children: React.ReactNode }) {
@@ -13,7 +16,15 @@ export default async function AppLayout({ children }: { children: React.ReactNod
   if (!session) redirect("/login");
   if (session.user.status !== "APPROVED") redirect("/pending");
 
-  const recipes = await getSidebarRecipes();
+  // Daily login XP: idempotent per calendar day, and must never block the page.
+  await awardDailyLogin(session.user.id).catch((error) => {
+    console.error("Daily login XP failed", error);
+  });
+
+  const [recipes, me] = await Promise.all([
+    getSidebarRecipes(),
+    prisma.user.findUnique({ where: { id: session.user.id }, select: { xp: true } }),
+  ]);
 
   return (
     <div className="flex min-h-screen">
@@ -28,8 +39,12 @@ export default async function AppLayout({ children }: { children: React.ReactNod
             <Link href="/recipes/submit" className="text-text-secondary transition-colors hover:text-text-primary">
               Suggest a recipe
             </Link>
-            <Link href="/profile" className="text-text-secondary transition-colors hover:text-text-primary">
+            <Link href="/likes" className="text-text-secondary transition-colors hover:text-text-primary">
+              Liked
+            </Link>
+            <Link href="/profile" className="flex items-center gap-1.5 text-text-secondary transition-colors hover:text-text-primary">
               {session.user.name}
+              {me && <LevelBadge xp={me.xp} />}
             </Link>
             {isStaff(session.user.role) && (
               <Link href="/admin" className="text-text-secondary transition-colors hover:text-text-primary">

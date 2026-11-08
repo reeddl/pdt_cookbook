@@ -1,4 +1,5 @@
 import { Badge } from "@/components/ui/card";
+import { LevelBadge } from "@/components/level/LevelBadge";
 
 interface ProfileHeaderProps {
   name: string;
@@ -7,6 +8,7 @@ interface ProfileHeaderProps {
   pledgeClass: string | null;
   graduationYear: number | null;
   bondNumber: string | null;
+  xp: number;
 }
 
 export function ProfileHeader({
@@ -16,6 +18,7 @@ export function ProfileHeader({
   pledgeClass,
   graduationYear,
   bondNumber,
+  xp,
 }: ProfileHeaderProps) {
   return (
     <div className="flex items-center gap-4">
@@ -32,7 +35,10 @@ export function ProfileHeader({
         </div>
       )}
       <div>
-        <h1 className="text-title-1-semibold text-text-primary">{name}</h1>
+        <h1 className="flex items-center gap-2 text-title-1-semibold text-text-primary">
+          {name}
+          <LevelBadge xp={xp} className="text-body-regular" />
+        </h1>
         {email && <p className="text-body-regular text-text-secondary">{email}</p>}
         <div className="mt-2 flex flex-wrap gap-2">
           {pledgeClass && <Badge>{pledgeClass}</Badge>}

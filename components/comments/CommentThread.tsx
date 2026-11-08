@@ -1,6 +1,8 @@
 import Link from "next/link";
+import { LevelBadge } from "@/components/level/LevelBadge";
 import { Textarea } from "@/components/ui/textarea";
 import { SubmitButton } from "@/components/ui/submit-button";
+import { COMMENT_XP_RULES } from "@/lib/xp-rules";
 import { addComment } from "@/app/(app)/recipes/[recipeId]/actions";
 import { deleteComment } from "@/app/admin/comments/actions";
 
@@ -8,7 +10,7 @@ interface CommentItem {
   id: string;
   body: string;
   createdAt: Date;
-  user: { id: string; name: string; avatarUrl: string | null };
+  user: { id: string; name: string; avatarUrl: string | null; xp: number };
 }
 
 export function CommentThread({
@@ -32,6 +34,9 @@ export function CommentThread({
       {canComment ? (
         <form action={addComment.bind(null, recipeId)} className="mb-6 flex flex-col gap-2">
           <Textarea name="body" placeholder="Share a tip or a note about this recipe…" rows={3} required />
+          <p className="text-caption-1-regular text-text-secondary">
+            Thoughtful comments (4+ words, on someone else&apos;s recipe) earn XP — the first on each recipe, up to {COMMENT_XP_RULES.maxPerDay} a day.
+          </p>
           <SubmitButton className="self-end" pendingLabel="Posting…">
             Post comment
           </SubmitButton>
@@ -66,6 +71,7 @@ export function CommentThread({
                 >
                   {comment.user.name}
                 </Link>
+                <LevelBadge xp={comment.user.xp} />
                 <span className="text-caption-1-regular text-text-secondary">
                   {comment.createdAt.toLocaleDateString()}
                 </span>

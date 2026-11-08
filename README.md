@@ -1,7 +1,7 @@
 # PDT Cookbook
 
 A private, invite-only recipe cookbook. Members sign in with Google, are approved by an
-admin, and can then browse recipes, comment, favorite, and suggest new recipes for
+admin, and can then browse recipes, comment, like, level up, and suggest new recipes for
 admin approval.
 
 ## Tech stack
@@ -118,7 +118,7 @@ created as `PENDING` and needs to be approved from `/admin/users`.
    (Vercel can run this as part of the build command, e.g.
    `prisma migrate deploy && next build`).
 7. Deploy, then do a full walkthrough as the admin: approve a test account, publish a
-   recipe, submit a recipe as a member, approve it, and confirm comments/favorites work.
+   recipe, submit a recipe as a member, approve it, and confirm comments/likes work.
 
 ## Project structure
 
@@ -130,13 +130,32 @@ created as `PENDING` and needs to be approved from `/admin/users`.
 - `prisma/schema.prisma` — data model
 - `lib/` — Prisma client, auth helpers, validation schemas, family-tree logic
 - `components/` — UI primitives and feature components (sidebar, recipes, comments,
-  favorites, family tree, admin tables)
+  likes, levels, family tree, admin tables)
+
+## XP, levels and badges
+
+Members earn XP, shown as a level next to their name. XP is an append-only ledger
+(`XpEvent`) with a cached total on `User.xp`; levels and ranks are derived from it
+(`lib/levels.ts`), so tuning the curve needs no migration. Point values and the
+comment anti-spam rules live in `lib/xp-rules.ts`; badge rules in `lib/badges.ts`.
+
+| Action | XP |
+| --- | --- |
+| Daily visit (once per day, Eastern time) | 5 |
+| Recipe approved into the cookbook | 30 |
+| Like received (once per member per recipe, not your own) | 3 |
+| Recipe liked (once per recipe, not your own) | 1 |
+| Substantive comment on someone else's recipe (first per recipe, max 3 per 24h) | 3 |
+
+Level 2 is 10 XP; levels 1–10 are Dishwasher, then Prep cook, Line cook, Sous chef
+and Head chef every ten levels (max 50). Moderators deleting a comment also removes
+the XP it earned.
 
 ## Roles
 
 | Role | Can do |
 | --- | --- |
-| Member | Browse, comment, favorite, suggest recipes (after admin approval of their account) |
+| Member | Browse, comment, like, suggest recipes (after admin approval of their account) |
 | Moderator | Everything a member can, plus approve/reject recipe submissions and delete any comment (`/admin`, `/admin/recipes/pending`, `/admin/comments`) |
 | Admin | Everything, plus approve members, change roles, and create/edit/delete recipes |
 

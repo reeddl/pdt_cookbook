@@ -20,6 +20,14 @@ enum UserRole {
   ADMIN
 }
 
+enum XpKind {
+  DAILY_LOGIN
+  COMMENT
+  LIKE_GIVEN
+  LIKE_RECEIVED
+  RECIPE_PUBLISHED
+}
+
 enum RecipeStatus {
   PENDING
   PUBLISHED
@@ -37,17 +45,23 @@ model User {
   pledgeClass    String?
   graduationYear Int?
 
-  bigId String?
-  big    User?   @relation("BigLittle", fields: [bigId], references: [id], onDelete: SetNull)
-  littles User[] @relation("BigLittle")
+  /// Running total of XpEvent.points — denormalised so a level can sit next to a
+  /// name without summing the ledger on every render. Level is derived from it.
+  xp Int @default(0)
+
+  bigId   String?
+  big     User?   @relation("BigLittle", fields: [bigId], references: [id], onDelete: SetNull)
+  littles User[]  @relation("BigLittle")
 
   accounts Account[]
   sessions Session[]
 
-  recipesSubmitted Recipe[] @relation("RecipeSubmitter")
-  recipesReviewed  Recipe[] @relation("RecipeReviewer")
+  recipesSubmitted Recipe[]    @relation("RecipeSubmitter")
+  recipesReviewed  Recipe[]    @relation("RecipeReviewer")
   comments         Comment[]
-  favorites        Favorite[]
+  likes            Like[]
+  xpEvents         XpEvent[]
+  badges           UserBadge[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -57,26 +71,26 @@ model User {
 }
 
 model Recipe {
-  id           String       @id @default(cuid())
-  title        String
-  ingredients  String
-  instructions String
-  photoUrl     String?
-  category     String
-  tags         String[]     @default([])
+  id            String   @id @default(cuid())
+  title         String
+  ingredients   String
+  instructions  String
+  photoUrl      String?
+  category      String
+  tags          String[] @default([])
   submitterName String
 
   submittedById String?
   submittedBy   User?   @relation("RecipeSubmitter", fields: [submittedById], references: [id], onDelete: SetNull)
 
-  status         RecipeStatus @default(PENDING)
-  reviewedById   String?
-  reviewedBy     User?        @relation("RecipeReviewer", fields: [reviewedById], references: [id], onDelete: SetNull)
-  reviewedAt     DateTime?
+  status          RecipeStatus @default(PENDING)
+  reviewedById    String?
+  reviewedBy      User?        @relation("RecipeReviewer", fields: [reviewedById], references: [id], onDelete: SetNull)
+  reviewedAt      DateTime?
   rejectionReason String?
 
-  comments  Comment[]
-  favorites Favorite[]
+  comments Comment[]
+  likes    Like[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -98,7 +112,7 @@ model Comment {
   @@index([recipeId])
 }
 
-model Favorite {
+model Like {
   userId    String
   user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   recipeId  String
@@ -106,6 +120,36 @@ model Favorite {
   createdAt DateTime @default(now())
 
   @@id([userId, recipeId])
+  @@index([recipeId])
+}
+
+/// Append-only XP ledger. `refKey` identifies *what* earned the XP (a recipe id,
+/// a comment id, a date, ...) so the unique constraint makes every award
+/// idempotent: the same thing can never pay out twice, even across un-like /
+/// re-like or double submits.
+model XpEvent {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  kind      XpKind
+  refKey    String
+  points    Int
+  /// Context only (no FK) so history survives a recipe being deleted.
+  recipeId  String?
+  createdAt DateTime @default(now())
+
+  @@unique([userId, kind, refKey])
+  @@index([userId, kind, createdAt])
+}
+
+/// Achievements a user has earned. Definitions live in lib/badges.ts.
+model UserBadge {
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  badgeKey  String
+  awardedAt DateTime @default(now())
+
+  @@id([userId, badgeKey])
 }
 
 // --- Auth.js (NextAuth) required models ---
