@@ -1,7 +1,9 @@
 import { auth } from "@/auth";
 import { redirect } from "next/navigation";
 import type { UserRole } from "@prisma/client";
+import { cookies } from "next/headers";
 import { prisma } from "@/lib/prisma";
+import { resolveRole, VIEW_AS_COOKIE } from "@/lib/viewAs";
 
 /** ADMIN and MODERATOR are "staff": they can use the review/moderation tools. */
 export function isStaff(role: UserRole | undefined): boolean {
@@ -10,6 +12,20 @@ export function isStaff(role: UserRole | undefined): boolean {
 
 export function isAdmin(role: UserRole | undefined): boolean {
   return role === "ADMIN";
+}
+
+/**
+ * The role the site should act as for this session: the real role, unless an
+ * admin is previewing a lower one (see lib/viewAs.ts). Use this — not
+ * `session.user.role` — for anything that gates what a user can see or do.
+ */
+export async function getViewState(session: { user: { role: UserRole } } | null | undefined) {
+  const jar = await cookies();
+  return resolveRole(session?.user.role, jar.get(VIEW_AS_COOKIE)?.value);
+}
+
+export async function getEffectiveRole(session: { user: { role: UserRole } } | null | undefined) {
+  return (await getViewState(session)).role;
 }
 
 export async function requireAuth() {
@@ -40,7 +56,7 @@ export async function requireProfileComplete() {
 
 export async function requireAdmin() {
   const session = await requireAuth();
-  if (session.user.role !== "ADMIN") {
+  if ((await getEffectiveRole(session)) !== "ADMIN") {
     throw new Error("Not authorized: admin only");
   }
   return session;
@@ -49,7 +65,7 @@ export async function requireAdmin() {
 /** Recipe review and comment moderation: admins and moderators. */
 export async function requireStaff() {
   const session = await requireAuth();
-  if (!isStaff(session.user.role)) {
+  if (!isStaff(await getEffectiveRole(session))) {
     throw new Error("Not authorized: staff only");
   }
   return session;
@@ -59,6 +75,6 @@ export async function requireStaff() {
 export async function requireAdminPage() {
   const session = await auth();
   if (!session) redirect("/login");
-  if (!isAdmin(session.user.role)) redirect("/admin");
+  if (!isAdmin(await getEffectiveRole(session))) redirect("/admin");
   return session;
 }

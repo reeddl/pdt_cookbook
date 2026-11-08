@@ -6,7 +6,9 @@ import { Sidebar } from "@/components/sidebar/Sidebar";
 import { ThemeToggle } from "@/components/application/theme/theme-toggle";
 import { SubmitButton } from "@/components/ui/submit-button";
 import { LevelBadge } from "@/components/level/LevelBadge";
-import { isStaff } from "@/lib/authz";
+import { getViewState, isStaff } from "@/lib/authz";
+import { PreviewBanner } from "@/components/admin/PreviewBanner";
+import { ViewAsSwitcher } from "@/components/admin/ViewAsSwitcher";
 import { prisma } from "@/lib/prisma";
 import { awardDailyLogin } from "@/lib/xp";
 import { getSidebarRecipes } from "@/lib/recipes";
@@ -15,6 +17,8 @@ export default async function AppLayout({ children }: { children: React.ReactNod
   const session = await auth();
   if (!session) redirect("/login");
   if (session.user.status !== "APPROVED") redirect("/pending");
+
+  const view = await getViewState(session);
 
   // Daily login XP: idempotent per calendar day, and must never block the page.
   await awardDailyLogin(session.user.id).catch((error) => {
@@ -31,6 +35,7 @@ export default async function AppLayout({ children }: { children: React.ReactNod
     <div className="flex min-h-screen">
       <Sidebar recipes={recipes} />
       <div className="flex flex-1 flex-col">
+        {view.previewing && <PreviewBanner role={view.previewing} name={session.user.name ?? "you"} />}
         <header className="flex flex-wrap items-center justify-between gap-3 border-b border-separator-border bg-background-primary-default py-3 pr-4 pl-20 sm:pl-6 sm:pr-6">
           <Link href="/recipes" className="flex items-center gap-2.5 text-title-3-semibold text-text-primary">
             <ShieldLogo height={30} preload />
@@ -47,11 +52,12 @@ export default async function AppLayout({ children }: { children: React.ReactNod
               {session.user.name}
               {me && <LevelBadge xp={me.xp} />}
             </Link>
-            {isStaff(session.user.role) && (
+            {isStaff(view.role) && (
               <Link href="/admin" className="text-text-secondary transition-colors hover:text-text-primary">
-                {session.user.role === "ADMIN" ? "Admin" : "Moderation"}
+                {view.role === "ADMIN" ? "Admin" : "Moderation"}
               </Link>
             )}
+            {view.realRole === "ADMIN" && !view.previewing && <ViewAsSwitcher />}
             <ThemeToggle appearance="segmented" size="small" />
             <form
               action={async () => {

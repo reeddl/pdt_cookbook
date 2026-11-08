@@ -151,6 +151,16 @@ Level 2 is 10 XP; levels 1–10 are Dishwasher, then Prep cook, Line cook, Sous 
 and Head chef every ten levels (max 50). Moderators deleting a comment also removes
 the XP it earned (replies are deleted with their parent comment).
 
+## Previewing as another role
+
+Admins get a **View as: Member / Moderator** control in the header. It sets a
+cookie (`pdt_view_as`, 8 hours) and the whole site then behaves as that role:
+navigation, `/admin` access and server-action permissions all follow the
+*effective* role (`getViewState` in `lib/authz.ts`, `lib/viewAs.ts`). A banner
+with **Exit preview** stays on screen meanwhile. The cookie can only lower a real
+admin's role; it is ignored for everyone else. Anything you post while previewing
+is still posted as your own account.
+
 ## Roles
 
 | Role | Can do |

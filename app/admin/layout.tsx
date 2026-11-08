@@ -1,16 +1,20 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { auth } from "@/auth";
-import { isAdmin, isStaff } from "@/lib/authz";
+import { getViewState, isAdmin, isStaff } from "@/lib/authz";
+import { PreviewBanner } from "@/components/admin/PreviewBanner";
 import { ShieldLogo } from "@/components/brand/ShieldLogo";
 
 export default async function AdminLayout({ children }: { children: React.ReactNode }) {
   const session = await auth();
   if (!session || session.user.status !== "APPROVED") redirect("/pending");
-  if (!isStaff(session.user.role)) redirect("/recipes");
-  const admin = isAdmin(session.user.role);
+  const view = await getViewState(session);
+  if (!isStaff(view.role)) redirect("/recipes");
+  const admin = isAdmin(view.role);
 
   return (
+    <>
+    {view.previewing && <PreviewBanner role={view.previewing} name={session.user.name ?? "you"} />}
     <div className="mx-auto flex min-h-screen w-full max-w-5xl flex-col px-6 py-8">
       <header className="mb-8 flex items-center justify-between">
         <div className="flex items-center gap-3">
@@ -52,5 +56,6 @@ export default async function AdminLayout({ children }: { children: React.ReactN
       </nav>
       {children}
     </div>
+    </>
   );
 }

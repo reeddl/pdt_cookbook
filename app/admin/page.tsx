@@ -1,13 +1,13 @@
 import Link from "next/link";
 import { auth } from "@/auth";
 import { prisma } from "@/lib/prisma";
-import { isAdmin } from "@/lib/authz";
+import { getEffectiveRole, isAdmin } from "@/lib/authz";
 import { daysAgo } from "@/lib/dates";
 import { Card } from "@/components/ui/card";
 
 export default async function AdminDashboardPage() {
   const session = await auth();
-  const admin = isAdmin(session?.user.role);
+  const admin = isAdmin(await getEffectiveRole(session));
   const weekAgo = daysAgo(7);
 
   const [pendingUsers, pendingRecipes, totalRecipes, totalMembers, recentComments] =

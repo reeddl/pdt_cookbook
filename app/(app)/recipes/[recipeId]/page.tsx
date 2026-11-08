@@ -2,7 +2,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { prisma } from "@/lib/prisma";
 import { auth } from "@/auth";
-import { isProfileComplete, isStaff } from "@/lib/authz";
+import { getEffectiveRole, isProfileComplete, isStaff } from "@/lib/authz";
 import { Badge } from "@/components/ui/card";
 import { LevelBadge } from "@/components/level/LevelBadge";
 import { LikeButton } from "@/components/likes/LikeButton";
@@ -16,6 +16,7 @@ export default async function RecipeDetailPage({
 }) {
   const { recipeId } = await params;
   const session = await auth();
+  const role = await getEffectiveRole(session);
 
   const [recipe, rawComments, myCommentLikes, like, likeCount, canComment] = await Promise.all([
     prisma.recipe.findUnique({
@@ -121,7 +122,7 @@ export default async function RecipeDetailPage({
         comments={comments}
         totalComments={rawComments.length}
         canComment={canComment}
-        canModerate={isStaff(session?.user.role)}
+        canModerate={isStaff(role)}
       />
     </article>
   );

@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 import { auth } from "@/auth";
+import { resolveRole, VIEW_AS_COOKIE } from "@/lib/viewAs";
 
 export async function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;
@@ -13,7 +14,9 @@ export async function proxy(request: NextRequest) {
     return NextResponse.redirect(new URL("/login", request.nextUrl.origin));
   }
 
-  const { status, role } = session.user;
+  const { status } = session.user;
+  // An admin previewing a lower role is routed exactly as that role would be.
+  const { role } = resolveRole(session.user.role, request.cookies.get(VIEW_AS_COOKIE)?.value);
 
   if (status !== "APPROVED") {
     if (pathname === "/pending") return NextResponse.next();
