@@ -17,6 +17,8 @@ interface TreeProps {
   recipeId: string;
   canComment: boolean;
   canModerate: boolean;
+  /** Pending (unconfirmed) members can read but not like or comment. */
+  viewOnly?: boolean;
 }
 
 export function CommentTree({ comments, ...rest }: TreeProps & { comments: CommentNodeData[] }) {
@@ -35,6 +37,7 @@ function CommentNode({
   recipeId,
   canComment,
   canModerate,
+  viewOnly = false,
 }: TreeProps & { node: CommentNodeData; depth: number }) {
   const [expanded, setExpanded] = useState(false);
   const [replying, setReplying] = useState(false);
@@ -65,6 +68,9 @@ function CommentNode({
       <p className="mt-1 whitespace-pre-line text-body-regular text-text-primary">{node.body}</p>
 
       <div className="mt-1 flex items-center gap-1">
+        {viewOnly ? (
+          <span className="px-3 text-body-regular text-text-secondary">♡ {node.likeCount}</span>
+        ) : (
         <form action={toggleCommentLike.bind(null, node.id)}>
           <SubmitButton
             variant="ghost"
@@ -75,6 +81,7 @@ function CommentNode({
             {node.likedByMe ? "♥" : "♡"} {node.likeCount}
           </SubmitButton>
         </form>
+        )}
         {canComment && (
           <Button type="button" variant="ghost" className="h-8" onClick={() => setReplying((v) => !v)}>
             {replying ? "Cancel" : "Reply"}

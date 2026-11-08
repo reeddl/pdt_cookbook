@@ -21,6 +21,7 @@ export default async function ProfilePage({
   const { resubmitted } = await searchParams;
   const session = await auth();
   if (!session) redirect("/login");
+  if (session.user.status !== "APPROVED") redirect("/recipes");
 
   const [profile, members] = await Promise.all([
     getMemberProfile(session.user.id, { includeUnpublished: true }),
