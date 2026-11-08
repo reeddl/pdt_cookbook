@@ -3,6 +3,7 @@ import { notFound, redirect } from "next/navigation";
 import { auth } from "@/auth";
 import { RecipeCard } from "@/components/recipes/RecipeCard";
 import { FamilyTree } from "@/components/family/FamilyTree";
+import { RejectedRecipes } from "@/components/recipes/RejectedRecipes";
 import { LevelCard } from "@/components/profile/LevelCard";
 import { ProfileHeader } from "@/components/profile/ProfileHeader";
 import { getFamilyMembers, getBigChain, getLittlesTree } from "@/lib/family";
@@ -12,7 +13,12 @@ import { Label } from "@/components/ui/label";
 import { SubmitButton } from "@/components/ui/submit-button";
 import { updateOwnProfile } from "./actions";
 
-export default async function ProfilePage() {
+export default async function ProfilePage({
+  searchParams,
+}: {
+  searchParams: Promise<{ resubmitted?: string }>;
+}) {
+  const { resubmitted } = await searchParams;
   const session = await auth();
   if (!session) redirect("/login");
 
@@ -23,7 +29,10 @@ export default async function ProfilePage() {
 
   if (!profile) notFound();
 
-  const { user, recipes, breakdown, badges } = profile;
+  const { user, breakdown, badges } = profile;
+  // Rejected recipes get their own "sent back" section, so they're not repeated below.
+  const rejected = profile.recipes.filter((r) => r.status === "REJECTED");
+  const recipes = profile.recipes.filter((r) => r.status !== "REJECTED");
   const bigChain = getBigChain(user.id, members);
   const littles = getLittlesTree(user.id, members);
 
@@ -38,6 +47,13 @@ export default async function ProfilePage() {
         bondNumber={user.bondNumber}
         xp={user.xp}
       />
+
+      {resubmitted && (
+        <div className="mt-6 rounded-3xl bg-status-lime-background p-4 text-body-regular text-status-lime-text">
+          Resubmitted — your recipe is back in the review queue.
+        </div>
+      )}
+      <RejectedRecipes recipes={rejected} />
 
       <section className="mt-8">
         <LevelCard xp={user.xp} breakdown={breakdown} earnedBadges={badges} />

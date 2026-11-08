@@ -5,7 +5,8 @@ import { prisma } from "@/lib/prisma";
 import { requireAuth, requireProfileComplete } from "@/lib/authz";
 import { awardComment, awardLike } from "@/lib/xp";
 
-export async function addComment(recipeId: string, formData: FormData) {
+/** `parentId` is set when replying to another comment. */
+export async function addComment(recipeId: string, parentId: string | null, formData: FormData) {
   const session = await requireProfileComplete();
   const body = formData.get("body");
   if (typeof body !== "string" || !body.trim()) return;
@@ -16,9 +17,19 @@ export async function addComment(recipeId: string, formData: FormData) {
   });
   if (!recipe) return;
 
+  if (parentId) {
+    // A reply must hang off a comment on this same recipe.
+    const parent = await prisma.comment.findFirst({
+      where: { id: parentId, recipeId },
+      select: { id: true },
+    });
+    if (!parent) return;
+  }
+
   const comment = await prisma.comment.create({
     data: {
       recipeId,
+      parentId,
       userId: session.user.id,
       body: body.trim(),
     },
@@ -53,4 +64,22 @@ export async function toggleLike(recipeId: string) {
 
   revalidatePath(`/recipes/${recipeId}`);
   revalidatePath("/likes");
+}
+
+export async function toggleCommentLike(commentId: string) {
+  const session = await requireAuth();
+  const userId = session.user.id;
+
+  const comment = await prisma.comment.findUnique({
+    where: { id: commentId },
+    select: { recipeId: true },
+  });
+  if (!comment) return;
+
+  const key = { userId_commentId: { userId, commentId } };
+  const existing = await prisma.commentLike.findUnique({ where: key });
+  if (existing) await prisma.commentLike.delete({ where: key });
+  else await prisma.commentLike.create({ data: { userId, commentId } });
+
+  revalidatePath(`/recipes/${comment.recipeId}`);
 }

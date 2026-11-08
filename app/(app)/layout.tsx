@@ -21,9 +21,10 @@ export default async function AppLayout({ children }: { children: React.ReactNod
     console.error("Daily login XP failed", error);
   });
 
-  const [recipes, me] = await Promise.all([
+  const [recipes, me, sentBack] = await Promise.all([
     getSidebarRecipes(),
     prisma.user.findUnique({ where: { id: session.user.id }, select: { xp: true } }),
+    prisma.recipe.count({ where: { submittedById: session.user.id, status: "REJECTED" } }),
   ]);
 
   return (
@@ -65,7 +66,20 @@ export default async function AppLayout({ children }: { children: React.ReactNod
           </div>
         </header>
         <main className="flex-1 overflow-y-auto px-4 py-8 sm:px-8">
-          <div className="mx-auto max-w-[880px]">{children}</div>
+          <div className="mx-auto max-w-[880px]">
+            {sentBack > 0 && (
+              <Link
+                href="/profile#needs-attention"
+                className="mb-6 block rounded-3xl bg-background-tertiary-error p-4 text-body-regular text-text-error-primary hover:underline"
+              >
+                {sentBack === 1
+                  ? "A recipe you submitted was sent back with feedback."
+                  : `${sentBack} recipes you submitted were sent back with feedback.`}{" "}
+                Review and resubmit →
+              </Link>
+            )}
+            {children}
+          </div>
         </main>
       </div>
     </div>

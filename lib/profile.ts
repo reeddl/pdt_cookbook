@@ -20,6 +20,8 @@ export interface MemberProfile {
     submitterName: string;
     submittedById: string | null;
     status: "PENDING" | "PUBLISHED" | "REJECTED";
+    /** Only ever populated for the member's own profile. */
+    rejectionReason: string | null;
   }[];
   breakdown: XpBreakdownRow[];
   badges: string[];
@@ -66,6 +68,7 @@ export async function getMemberProfile(
         submitterName: true,
         submittedById: true,
         status: true,
+        rejectionReason: includeUnpublished,
       },
       orderBy: [{ status: "asc" }, { title: "asc" }],
     }),

@@ -82,14 +82,18 @@ export async function approveRecipe(recipeId: string) {
 export async function rejectRecipe(recipeId: string, formData: FormData) {
   const session = await requireStaff();
   const reason = formData.get("reason");
+  if (typeof reason !== "string" || !reason.trim()) {
+    throw new Error("A rejection reason is required so the submitter knows what to fix");
+  }
   await prisma.recipe.update({
     where: { id: recipeId },
     data: {
       status: "REJECTED",
       reviewedById: session.user.id,
       reviewedAt: new Date(),
-      rejectionReason: typeof reason === "string" && reason ? reason : null,
+      rejectionReason: reason.trim(),
     },
   });
   revalidatePath("/admin/recipes/pending");
+  revalidatePath("/profile");
 }

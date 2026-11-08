@@ -56,10 +56,11 @@ model User {
   accounts Account[]
   sessions Session[]
 
-  recipesSubmitted Recipe[]    @relation("RecipeSubmitter")
-  recipesReviewed  Recipe[]    @relation("RecipeReviewer")
+  recipesSubmitted Recipe[]      @relation("RecipeSubmitter")
+  recipesReviewed  Recipe[]      @relation("RecipeReviewer")
   comments         Comment[]
   likes            Like[]
+  commentLikes     CommentLike[]
   xpEvents         XpEvent[]
   badges           UserBadge[]
 
@@ -109,7 +110,25 @@ model Comment {
   body      String
   createdAt DateTime @default(now())
 
+  /// Set for replies. Deleting a comment deletes its whole sub-thread.
+  parentId String?
+  parent   Comment?      @relation("CommentReplies", fields: [parentId], references: [id], onDelete: Cascade)
+  replies  Comment[]     @relation("CommentReplies")
+  likes    CommentLike[]
+
   @@index([recipeId])
+  @@index([parentId])
+}
+
+model CommentLike {
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  commentId String
+  comment   Comment  @relation(fields: [commentId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+
+  @@id([userId, commentId])
+  @@index([commentId])
 }
 
 model Like {

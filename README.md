@@ -149,7 +149,7 @@ comment anti-spam rules live in `lib/xp-rules.ts`; badge rules in `lib/badges.ts
 
 Level 2 is 10 XP; levels 1–10 are Dishwasher, then Prep cook, Line cook, Sous chef
 and Head chef every ten levels (max 50). Moderators deleting a comment also removes
-the XP it earned.
+the XP it earned (replies are deleted with their parent comment).
 
 ## Roles
 
