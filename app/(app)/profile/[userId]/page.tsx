@@ -2,7 +2,7 @@ import { notFound, redirect } from "next/navigation";
 import { auth } from "@/auth";
 import { RecipeCard } from "@/components/recipes/RecipeCard";
 import { FamilyTree } from "@/components/family/FamilyTree";
-import { FoodieScoreCard } from "@/components/profile/FoodieScoreCard";
+import { LevelCard } from "@/components/profile/LevelCard";
 import { ProfileHeader } from "@/components/profile/ProfileHeader";
 import { getFamilyMembers, getBigChain, getLittlesTree } from "@/lib/family";
 import { getMemberProfile } from "@/lib/profile";
@@ -23,7 +23,7 @@ export default async function MemberProfilePage({
 
   if (!profile) notFound();
 
-  const { user, recipes, parts, score } = profile;
+  const { user, recipes, breakdown, badges } = profile;
   const bigChain = getBigChain(user.id, members);
   const littles = getLittlesTree(user.id, members);
 
@@ -35,10 +35,11 @@ export default async function MemberProfilePage({
         pledgeClass={user.pledgeClass}
         graduationYear={user.graduationYear}
         bondNumber={user.bondNumber}
+        xp={user.xp}
       />
 
       <section className="mt-8">
-        <FoodieScoreCard score={score} parts={parts} />
+        <LevelCard xp={user.xp} breakdown={breakdown} earnedBadges={badges} />
       </section>
 
       <section className="mt-10">

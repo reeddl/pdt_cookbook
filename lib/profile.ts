@@ -1,5 +1,5 @@
 import { prisma } from "@/lib/prisma";
-import { foodieScore, type FoodieScoreParts } from "@/lib/foodieScore";
+import { getXpSummary, type XpBreakdownRow } from "@/lib/xp";
 
 export interface MemberProfile {
   user: {
@@ -10,6 +10,7 @@ export interface MemberProfile {
     bondNumber: string | null;
     pledgeClass: string | null;
     graduationYear: number | null;
+    xp: number;
   };
   recipes: {
     id: string;
@@ -19,9 +20,11 @@ export interface MemberProfile {
     submitterName: string;
     submittedById: string | null;
     status: "PENDING" | "PUBLISHED" | "REJECTED";
+    /** Only ever populated for the member's own profile. */
+    rejectionReason: string | null;
   }[];
-  parts: FoodieScoreParts;
-  score: number;
+  breakdown: XpBreakdownRow[];
+  badges: string[];
 }
 
 /**
@@ -45,12 +48,13 @@ export async function getMemberProfile(
       bondNumber: true,
       pledgeClass: true,
       graduationYear: true,
+      xp: true,
     },
   });
 
   if (!user) return null;
 
-  const [recipes, commentsWritten, favoritesReceived, recipesPublished] = await Promise.all([
+  const [recipes, { breakdown, badges }] = await Promise.all([
     prisma.recipe.findMany({
       where: {
         submittedById: userId,
@@ -64,17 +68,12 @@ export async function getMemberProfile(
         submitterName: true,
         submittedById: true,
         status: true,
+        rejectionReason: includeUnpublished,
       },
       orderBy: [{ status: "asc" }, { title: "asc" }],
     }),
-    prisma.comment.count({ where: { userId } }),
-    prisma.favorite.count({
-      where: { recipe: { submittedById: userId, status: "PUBLISHED" } },
-    }),
-    prisma.recipe.count({ where: { submittedById: userId, status: "PUBLISHED" } }),
+    getXpSummary(userId),
   ]);
 
-  const parts: FoodieScoreParts = { recipesPublished, favoritesReceived, commentsWritten };
-
-  return { user, recipes, parts, score: foodieScore(parts) };
+  return { user, recipes, breakdown, badges: badges.map((b) => b.badgeKey) };
 }

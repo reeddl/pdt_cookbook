@@ -4,7 +4,9 @@ import { prisma } from "@/lib/prisma";
 import { auth } from "@/auth";
 import { isProfileComplete, isStaff } from "@/lib/authz";
 import { Badge } from "@/components/ui/card";
-import { FavoriteButton } from "@/components/favorites/FavoriteButton";
+import { LevelBadge } from "@/components/level/LevelBadge";
+import { LikeButton } from "@/components/likes/LikeButton";
+import { buildCommentTree } from "@/lib/commentTree";
 import { CommentThread } from "@/components/comments/CommentThread";
 
 export default async function RecipeDetailPage({
@@ -15,22 +17,48 @@ export default async function RecipeDetailPage({
   const { recipeId } = await params;
   const session = await auth();
 
-  const [recipe, comments, favorite, canComment] = await Promise.all([
-    prisma.recipe.findUnique({ where: { id: recipeId } }),
+  const [recipe, rawComments, myCommentLikes, like, likeCount, canComment] = await Promise.all([
+    prisma.recipe.findUnique({
+      where: { id: recipeId },
+      include: { submittedBy: { select: { xp: true } } },
+    }),
     prisma.comment.findMany({
       where: { recipeId },
-      include: { user: { select: { id: true, name: true, avatarUrl: true } } },
+      include: {
+        user: { select: { id: true, name: true, avatarUrl: true, xp: true } },
+        _count: { select: { likes: true } },
+      },
       orderBy: { createdAt: "asc" },
     }),
     session
-      ? prisma.favorite.findUnique({
+      ? prisma.commentLike.findMany({
+          where: { userId: session.user.id, comment: { recipeId } },
+          select: { commentId: true },
+        })
+      : [],
+    session
+      ? prisma.like.findUnique({
           where: { userId_recipeId: { userId: session.user.id, recipeId } },
         })
       : null,
+    prisma.like.count({ where: { recipeId } }),
     session ? isProfileComplete(session.user.id) : false,
   ]);
 
   if (!recipe || recipe.status !== "PUBLISHED") notFound();
+
+  const likedIds = new Set(myCommentLikes.map((l) => l.commentId));
+  const comments = buildCommentTree(
+    rawComments.map((c) => ({
+      id: c.id,
+      parentId: c.parentId,
+      body: c.body,
+      createdAt: c.createdAt,
+      user: c.user,
+      likeCount: c._count.likes,
+      likedByMe: likedIds.has(c.id),
+    }))
+  );
 
   return (
     <article>
@@ -64,9 +92,10 @@ export default async function RecipeDetailPage({
             ) : (
               recipe.submitterName
             )}
+            {recipe.submittedBy && <LevelBadge xp={recipe.submittedBy.xp} className="ml-1.5" />}
           </p>
         </div>
-        <FavoriteButton recipeId={recipe.id} isFavorited={Boolean(favorite)} />
+        <LikeButton recipeId={recipe.id} isLiked={Boolean(like)} likeCount={likeCount} />
       </div>
 
       <div className="mt-8 grid gap-8 sm:grid-cols-[1fr_2fr]">
@@ -89,7 +118,9 @@ export default async function RecipeDetailPage({
 
       <CommentThread
         recipeId={recipe.id}
-        comments={comments} canComment={canComment}
+        comments={comments}
+        totalComments={rawComments.length}
+        canComment={canComment}
         canModerate={isStaff(session?.user.role)}
       />
     </article>

@@ -46,7 +46,7 @@ export default async function PendingRecipesPage() {
                 </SubmitButton>
               </form>
               <form action={rejectRecipe.bind(null, recipe.id)} className="flex items-center gap-2">
-                <Input name="reason" placeholder="Rejection reason (optional)" className="w-64" />
+                <Input name="reason" placeholder="Reason for the submitter (required)" required className="w-72" />
                 <SubmitButton variant="danger" pendingLabel="Rejecting…">
                   Reject
                 </SubmitButton>
