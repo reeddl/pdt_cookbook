@@ -15,9 +15,17 @@ export async function proxy(request: NextRequest) {
 
   const { status, role } = session.user;
 
-  if (status !== "APPROVED") {
+  // REJECTED accounts are locked out. PENDING accounts get view-only access.
+  if (status === "REJECTED") {
     if (pathname === "/pending") return NextResponse.next();
     return NextResponse.redirect(new URL("/pending", request.nextUrl.origin));
+  }
+
+  if (status === "PENDING") {
+    if (pathname === "/pending" || pathname === "/login" || pathname.startsWith("/admin")) {
+      return NextResponse.redirect(new URL("/recipes", request.nextUrl.origin));
+    }
+    return NextResponse.next();
   }
 
   if (pathname.startsWith("/admin")) {

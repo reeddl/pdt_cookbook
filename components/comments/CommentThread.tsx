@@ -12,6 +12,7 @@ export function CommentThread({
   totalComments,
   canComment,
   canModerate = false,
+  viewOnly = false,
 }: {
   recipeId: string;
   /** Top-level comments, each carrying its nested replies. */
@@ -20,6 +21,8 @@ export function CommentThread({
   canComment: boolean;
   /** Staff can remove any comment. */
   canModerate?: boolean;
+  /** Pending members: read-only, with a note instead of the comment box. */
+  viewOnly?: boolean;
 }) {
   return (
     <section className="mt-10">
@@ -27,7 +30,11 @@ export function CommentThread({
         Comments {totalComments > 0 && `(${totalComments})`}
       </h2>
 
-      {canComment ? (
+      {viewOnly ? (
+        <p className="mb-6 text-body-regular text-text-secondary">
+          Commenting opens up once an admin confirms your account.
+        </p>
+      ) : canComment ? (
         <form action={addComment.bind(null, recipeId, null)} className="mb-6 flex flex-col gap-2">
           <Textarea name="body" placeholder="Share a tip or a note about this recipe…" rows={3} required />
           <p className="text-caption-1-regular text-text-secondary">
@@ -54,6 +61,7 @@ export function CommentThread({
           comments={comments}
           canComment={canComment}
           canModerate={canModerate}
+          viewOnly={viewOnly}
         />
       )}
     </section>

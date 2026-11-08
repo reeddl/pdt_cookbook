@@ -14,12 +14,15 @@ import { getSidebarRecipes } from "@/lib/recipes";
 export default async function AppLayout({ children }: { children: React.ReactNode }) {
   const session = await auth();
   if (!session) redirect("/login");
-  if (session.user.status !== "APPROVED") redirect("/pending");
+  if (session.user.status === "REJECTED") redirect("/pending");
+  const viewOnly = session.user.status !== "APPROVED";
 
   // Daily login XP: idempotent per calendar day, and must never block the page.
-  await awardDailyLogin(session.user.id).catch((error) => {
-    console.error("Daily login XP failed", error);
-  });
+  if (!viewOnly) {
+    await awardDailyLogin(session.user.id).catch((error) => {
+      console.error("Daily login XP failed", error);
+    });
+  }
 
   const [recipes, me, sentBack] = await Promise.all([
     getSidebarRecipes(),
@@ -37,16 +40,21 @@ export default async function AppLayout({ children }: { children: React.ReactNod
             PDT Cookbook
           </Link>
           <div className="flex flex-wrap items-center gap-4 text-body-regular">
-            <Link href="/recipes/submit" className="text-text-secondary transition-colors hover:text-text-primary">
-              Suggest a recipe
-            </Link>
-            <Link href="/likes" className="text-text-secondary transition-colors hover:text-text-primary">
-              Liked
-            </Link>
-            <Link href="/profile" className="flex items-center gap-1.5 text-text-secondary transition-colors hover:text-text-primary">
-              {session.user.name}
-              {me && <LevelBadge xp={me.xp} />}
-            </Link>
+            {!viewOnly && (
+              <>
+                <Link href="/recipes/submit" className="text-text-secondary transition-colors hover:text-text-primary">
+                  Suggest a recipe
+                </Link>
+                <Link href="/likes" className="text-text-secondary transition-colors hover:text-text-primary">
+                  Liked
+                </Link>
+                <Link href="/profile" className="flex items-center gap-1.5 text-text-secondary transition-colors hover:text-text-primary">
+                  {session.user.name}
+                  {me && <LevelBadge xp={me.xp} />}
+                </Link>
+              </>
+            )}
+            {viewOnly && <span className="text-text-secondary">{session.user.name}</span>}
             {isStaff(session.user.role) && (
               <Link href="/admin" className="text-text-secondary transition-colors hover:text-text-primary">
                 {session.user.role === "ADMIN" ? "Admin" : "Moderation"}
@@ -67,6 +75,12 @@ export default async function AppLayout({ children }: { children: React.ReactNod
         </header>
         <main className="flex-1 overflow-y-auto px-4 py-8 sm:px-8">
           <div className="mx-auto max-w-[880px]">
+            {viewOnly && (
+              <div className="mb-6 rounded-3xl bg-background-secondary-default p-4 text-body-regular text-text-secondary">
+                You&apos;re signed in with view-only access. An admin will confirm your account soon —
+                then you can like, comment, suggest recipes, and get your full profile.
+              </div>
+            )}
             {sentBack > 0 && (
               <Link
                 href="/profile#needs-attention"

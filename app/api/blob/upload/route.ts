@@ -12,7 +12,7 @@ export async function POST(request: Request): Promise<NextResponse> {
       request,
       onBeforeGenerateToken: async () => {
         const session = await auth();
-        if (!session || !(await isProfileComplete(session.user.id))) {
+        if (!session || session.user.status !== "APPROVED" || !(await isProfileComplete(session.user.id))) {
           throw new Error("Complete your profile before uploading files");
         }
         return {

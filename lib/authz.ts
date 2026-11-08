@@ -12,10 +12,20 @@ export function isAdmin(role: UserRole | undefined): boolean {
   return role === "ADMIN";
 }
 
-export async function requireAuth() {
+/** Signed in at all (includes view-only PENDING members). Never use for writes. */
+export async function requireSession() {
   const session = await auth();
   if (!session) {
     throw new Error("Not authorized: sign-in required");
+  }
+  return session;
+}
+
+/** Signed in AND confirmed by an admin. Every write goes through this. */
+export async function requireAuth() {
+  const session = await requireSession();
+  if (session.user.status !== "APPROVED") {
+    throw new Error("Not authorized: your account is awaiting confirmation");
   }
   return session;
 }

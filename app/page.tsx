@@ -4,6 +4,6 @@ import { auth } from "@/auth";
 export default async function Home() {
   const session = await auth();
   if (!session) redirect("/login");
-  if (session.user.status !== "APPROVED") redirect("/pending");
+  if (session.user.status === "REJECTED") redirect("/pending");
   redirect("/recipes");
 }

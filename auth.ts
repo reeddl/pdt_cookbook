@@ -20,9 +20,9 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
           ...data,
           name: data.name ?? data.email,
           avatarUrl: image ?? null,
-          // No approval gate on sign-up — everyone lands straight on the homepage.
-          // Admins can still flip someone to REJECTED to cut off access.
-          status: UserStatus.APPROVED,
+          // New sign-ups start PENDING: they can browse the cookbook view-only
+          // until an admin confirms them (then they get a full profile).
+          status: isAdminEmail ? UserStatus.APPROVED : UserStatus.PENDING,
           role: isAdminEmail ? UserRole.ADMIN : UserRole.MEMBER,
         },
       });
@@ -49,13 +49,6 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
         await prisma.user.updateMany({
           where: { email: user.email, NOT: { status: "APPROVED", role: "ADMIN" } },
           data: { status: UserStatus.APPROVED, role: UserRole.ADMIN },
-        });
-      } else {
-        // Carry forward the removal of the approval gate to accounts created
-        // before this change — REJECTED accounts stay blocked.
-        await prisma.user.updateMany({
-          where: { email: user.email, status: "PENDING" },
-          data: { status: UserStatus.APPROVED },
         });
       }
 

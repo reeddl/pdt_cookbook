@@ -6,6 +6,7 @@ import { RecipeCard } from "@/components/recipes/RecipeCard";
 export default async function LikedRecipesPage() {
   const session = await auth();
   if (!session) redirect("/login");
+  if (session.user.status !== "APPROVED") redirect("/recipes");
 
   const likes = await prisma.like.findMany({
     // A recipe pulled from the cookbook drops off the list until it's back.

@@ -1,3 +1,4 @@
+import { redirect } from "next/navigation";
 import Link from "next/link";
 import { auth } from "@/auth";
 import { isProfileComplete } from "@/lib/authz";
@@ -11,6 +12,8 @@ export default async function SubmitRecipePage({
   searchParams: Promise<{ submitted?: string }>;
 }) {
   const session = await auth();
+  if (!session) redirect("/login");
+  if (session.user.status !== "APPROVED") redirect("/recipes");
   const { submitted } = await searchParams;
   const [canSubmit, tagSuggestions] = await Promise.all([
     session ? isProfileComplete(session.user.id) : false,

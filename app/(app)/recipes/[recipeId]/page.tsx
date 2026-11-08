@@ -16,6 +16,7 @@ export default async function RecipeDetailPage({
 }) {
   const { recipeId } = await params;
   const session = await auth();
+  const approved = session?.user.status === "APPROVED";
 
   const [recipe, rawComments, myCommentLikes, like, likeCount, canComment] = await Promise.all([
     prisma.recipe.findUnique({
@@ -42,7 +43,7 @@ export default async function RecipeDetailPage({
         })
       : null,
     prisma.like.count({ where: { recipeId } }),
-    session ? isProfileComplete(session.user.id) : false,
+    approved && session ? isProfileComplete(session.user.id) : false,
   ]);
 
   if (!recipe || recipe.status !== "PUBLISHED") notFound();
@@ -95,7 +96,7 @@ export default async function RecipeDetailPage({
             {recipe.submittedBy && <LevelBadge xp={recipe.submittedBy.xp} className="ml-1.5" />}
           </p>
         </div>
-        <LikeButton recipeId={recipe.id} isLiked={Boolean(like)} likeCount={likeCount} />
+        {approved ? <LikeButton recipeId={recipe.id} isLiked={Boolean(like)} likeCount={likeCount} /> : <span className="whitespace-nowrap text-body-regular text-text-secondary">♡ {likeCount}</span>}
       </div>
 
       <div className="mt-8 grid gap-8 sm:grid-cols-[1fr_2fr]">
@@ -122,6 +123,7 @@ export default async function RecipeDetailPage({
         totalComments={rawComments.length}
         canComment={canComment}
         canModerate={isStaff(session?.user.role)}
+        viewOnly={!approved}
       />
     </article>
   );

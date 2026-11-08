@@ -12,6 +12,7 @@ export default async function EditRejectedRecipePage({
 }) {
   const session = await auth();
   if (!session) redirect("/login");
+  if (session.user.status !== "APPROVED") redirect("/recipes");
   const { recipeId } = await params;
 
   const [recipe, tagSuggestions] = await Promise.all([
