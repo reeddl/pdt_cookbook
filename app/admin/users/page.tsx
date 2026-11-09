@@ -28,10 +28,10 @@ export default async function AdminUsersPage() {
         ) : (
           <div className="space-y-3">
             {pending.map((user) => (
-              <Card key={user.id} className="flex items-center justify-between p-4">
-                <div>
-                  <p className="font-medium text-text-primary">{user.name}</p>
-                  <p className="text-body-regular text-text-secondary">{user.email}</p>
+              <Card key={user.id} className="flex flex-col gap-3 p-4 sm:flex-row sm:items-center sm:justify-between">
+                <div className="min-w-0">
+                  <p className="font-medium break-words text-text-primary">{user.name}</p>
+                  <p className="text-body-regular break-all text-text-secondary">{user.email}</p>
                 </div>
                 <div className="flex gap-2">
                   <form action={approveUser.bind(null, user.id)}>
@@ -55,17 +55,17 @@ export default async function AdminUsersPage() {
         <h2 className="mb-3 text-title-2-semibold text-text-primary">Roster</h2>
         <div className="space-y-2">
           {roster.map((user) => (
-            <Card key={user.id} className="flex items-center justify-between p-4">
-              <div>
+            <Card key={user.id} className="flex flex-col gap-3 p-4 sm:flex-row sm:items-center sm:justify-between">
+              <div className="min-w-0">
                 <Link
                   href={`/profile/${user.id}`}
                   className="font-medium text-text-primary hover:text-button-ghost-foreground hover:underline"
                 >
                   {user.name}
                 </Link>
-                <p className="text-body-regular text-text-secondary">{user.email}</p>
+                <p className="text-body-regular break-all text-text-secondary">{user.email}</p>
               </div>
-              <div className="flex items-center gap-2">
+              <div className="flex flex-wrap items-center gap-2">
                 <Badge>{user.role}</Badge>
                 <Badge className={user.status === "REJECTED" ? "bg-background-tertiary-error text-text-error-primary" : ""}>
                   {user.status}

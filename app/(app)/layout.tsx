@@ -3,6 +3,8 @@ import { redirect } from "next/navigation";
 import { auth, signOut } from "@/auth";
 import { ShieldLogo } from "@/components/brand/ShieldLogo";
 import { Sidebar } from "@/components/sidebar/Sidebar";
+import { SidebarProvider, SidebarTrigger } from "@/components/sidebar/SidebarContext";
+import { HeaderMenu } from "@/components/sidebar/HeaderMenu";
 import { ThemeToggle } from "@/components/application/theme/theme-toggle";
 import { SubmitButton } from "@/components/ui/submit-button";
 import { LevelBadge } from "@/components/level/LevelBadge";
@@ -30,50 +32,61 @@ export default async function AppLayout({ children }: { children: React.ReactNod
     prisma.recipe.count({ where: { submittedById: session.user.id, status: "REJECTED" } }),
   ]);
 
+  // On phones the menu stacks these as full-width rows at least 44px tall.
+  const navLink =
+    "text-text-secondary transition-colors hover:text-text-primary max-sm:flex max-sm:min-h-11 max-sm:items-center";
+
   return (
+    <SidebarProvider>
     <div className="flex min-h-screen">
       <Sidebar recipes={recipes} />
-      <div className="flex flex-1 flex-col">
-        <header className="flex flex-wrap items-center justify-between gap-3 border-b border-separator-border bg-background-primary-default py-3 pr-4 pl-20 sm:pl-6 sm:pr-6">
-          <Link href="/recipes" className="flex items-center gap-2.5 text-title-3-semibold text-text-primary">
-            <ShieldLogo height={30} preload />
-            PDT Cookbook
-          </Link>
-          <div className="flex flex-wrap items-center gap-4 text-body-regular">
+      <div className="flex min-w-0 flex-1 flex-col">
+        <header className="relative flex flex-wrap items-center justify-between gap-3 border-b border-separator-border bg-background-primary-default px-4 py-3 max-sm:sticky max-sm:top-0 max-sm:z-20 max-sm:py-2 sm:px-6">
+          <div className="flex min-w-0 items-center gap-3">
+            <SidebarTrigger />
+            <Link href="/recipes" className="flex min-w-0 items-center gap-2.5 text-title-3-semibold text-text-primary">
+              <ShieldLogo height={30} preload />
+              <span className="truncate">PDT Cookbook</span>
+            </Link>
+          </div>
+          <HeaderMenu>
             {!viewOnly && (
               <>
-                <Link href="/recipes/submit" className="text-text-secondary transition-colors hover:text-text-primary">
+                <Link href="/recipes/submit" className={navLink}>
                   Suggest a recipe
                 </Link>
-                <Link href="/likes" className="text-text-secondary transition-colors hover:text-text-primary">
+                <Link href="/likes" className={navLink}>
                   Liked
                 </Link>
-                <Link href="/profile" className="flex items-center gap-1.5 text-text-secondary transition-colors hover:text-text-primary">
+                <Link href="/profile" className={`${navLink} gap-1.5 sm:flex sm:items-center`}>
                   {session.user.name}
                   {me && <LevelBadge xp={me.xp} />}
                 </Link>
               </>
             )}
-            {viewOnly && <span className="text-text-secondary">{session.user.name}</span>}
+            {viewOnly && <span className="text-text-secondary max-sm:flex max-sm:min-h-11 max-sm:items-center">{session.user.name}</span>}
             {isStaff(session.user.role) && (
-              <Link href="/admin" className="text-text-secondary transition-colors hover:text-text-primary">
+              <Link href="/admin" className={navLink}>
                 {session.user.role === "ADMIN" ? "Admin" : "Moderation"}
               </Link>
             )}
-            <ThemeToggle appearance="segmented" size="small" />
+            <div className="max-sm:flex max-sm:min-h-11 max-sm:items-center">
+              <ThemeToggle appearance="segmented" size="small" />
+            </div>
             <form
+              className="max-sm:mt-1"
               action={async () => {
                 "use server";
                 await signOut({ redirectTo: "/login" });
               }}
             >
-              <SubmitButton variant="ghost" pendingLabel="Signing out…">
+              <SubmitButton variant="ghost" className="max-sm:h-11 max-sm:w-full" pendingLabel="Signing out…">
                 Sign out
               </SubmitButton>
             </form>
-          </div>
+          </HeaderMenu>
         </header>
-        <main className="flex-1 overflow-y-auto px-4 py-8 sm:px-8">
+        <main className="flex-1 overflow-y-auto px-4 py-6 sm:px-8 sm:py-8">
           <div className="mx-auto max-w-[880px]">
             {viewOnly && (
               <div className="mb-6 rounded-3xl bg-background-secondary-default p-4 text-body-regular text-text-secondary">
@@ -97,5 +110,6 @@ export default async function AppLayout({ children }: { children: React.ReactNod
         </main>
       </div>
     </div>
+    </SidebarProvider>
   );
 }

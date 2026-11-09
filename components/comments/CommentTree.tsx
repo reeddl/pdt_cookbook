@@ -49,14 +49,14 @@ function CommentNode({
 
   return (
     <li className={depth === 0 ? "border-t border-separator-border pt-4" : ""}>
-      <div className="flex items-center gap-2">
+      <div className="flex flex-wrap items-center gap-x-2 gap-y-1">
         {node.user.avatarUrl && (
           // eslint-disable-next-line @next/next/no-img-element
           <img src={node.user.avatarUrl} alt="" className="h-6 w-6 rounded-full object-cover" />
         )}
         <Link
           href={`/profile/${node.user.id}`}
-          className="text-body-medium text-text-primary hover:text-button-ghost-foreground hover:underline"
+          className="min-w-0 break-words text-body-medium text-text-primary hover:text-button-ghost-foreground hover:underline"
         >
           {node.user.name}
         </Link>
@@ -65,9 +65,9 @@ function CommentNode({
           {new Date(node.createdAt).toLocaleDateString()}
         </span>
       </div>
-      <p className="mt-1 whitespace-pre-line text-body-regular text-text-primary">{node.body}</p>
+      <p className="mt-1 whitespace-pre-line break-words text-body-regular text-text-primary">{node.body}</p>
 
-      <div className="mt-1 flex items-center gap-1">
+      <div className="mt-1 flex flex-wrap items-center gap-1">
         {viewOnly ? (
           <span className="px-3 text-body-regular text-text-secondary">♡ {node.likeCount}</span>
         ) : (
@@ -122,7 +122,8 @@ function CommentNode({
       {node.replies.length > 0 && (
         <div
           className={
-            depth < MAX_INDENT_DEPTH ? "mt-3 ml-3 border-l border-separator-border pl-4" : "mt-3"
+            // Shallower indent on phones so four levels of replies still leave room to read.
+            depth < MAX_INDENT_DEPTH ? "mt-3 ml-1 border-l border-separator-border pl-3 sm:ml-3 sm:pl-4" : "mt-3"
           }
         >
           <ul className="space-y-4">

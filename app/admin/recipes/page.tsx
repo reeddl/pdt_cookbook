@@ -19,10 +19,10 @@ export default async function AdminRecipesPage() {
         <p className="text-body-regular text-text-secondary">No recipes yet — add the first one.</p>
       ) : (
         recipes.map((recipe) => (
-          <Card key={recipe.id} className="flex items-center justify-between p-4">
-            <div>
-              <p className="font-medium text-text-primary">{recipe.title}</p>
-              <div className="mt-1 flex items-center gap-2">
+          <Card key={recipe.id} className="flex flex-col gap-3 p-4 sm:flex-row sm:items-center sm:justify-between">
+            <div className="min-w-0">
+              <p className="font-medium break-words text-text-primary">{recipe.title}</p>
+              <div className="mt-1 flex flex-wrap items-center gap-2">
                 <Badge>{recipe.category}</Badge>
                 <span className="text-caption-1-regular text-text-secondary">by {recipe.submitterName}</span>
               </div>

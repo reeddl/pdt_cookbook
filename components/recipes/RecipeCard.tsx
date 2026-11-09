@@ -37,7 +37,7 @@ export function RecipeCard({
       <div className="p-4">
         <Link
           href={`/recipes/${id}`}
-          className="font-medium text-text-primary after:absolute after:inset-0 after:content-['']"
+          className="font-medium break-words text-text-primary after:absolute after:inset-0 after:content-['']"
         >
           {title}
         </Link>

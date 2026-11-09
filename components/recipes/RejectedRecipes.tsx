@@ -26,15 +26,15 @@ export function RejectedRecipes({ recipes }: { recipes: RejectedRecipe[] }) {
       <div className="space-y-3">
         {recipes.map((recipe) => (
           <Card key={recipe.id} className="p-4">
-            <p className="font-medium text-text-primary">{recipe.title}</p>
-            <p className="mt-2 whitespace-pre-line rounded-2lg bg-background-tertiary-error p-3 text-body-regular text-text-error-primary">
+            <p className="font-medium break-words text-text-primary">{recipe.title}</p>
+            <p className="mt-2 whitespace-pre-line break-words rounded-2lg bg-background-tertiary-error p-3 text-body-regular text-text-error-primary">
               <span className="text-body-medium">Reviewer note: </span>
               {recipe.rejectionReason ?? "No reason was given."}
             </p>
-            <div className="mt-3 flex items-center gap-2">
+            <div className="mt-3 flex flex-wrap items-center gap-2">
               <Link
                 href={`/recipes/${recipe.id}/edit`}
-                className={cx(buttonStyles.base, buttonStyles.size.medium, buttonStyles.variant.primary, "px-3")}
+                className={cx(buttonStyles.base, buttonStyles.size.medium, buttonStyles.variant.primary, "px-3 max-sm:min-h-11")}
               >
                 Edit &amp; resubmit
               </Link>

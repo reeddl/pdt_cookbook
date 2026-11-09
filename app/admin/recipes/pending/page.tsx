@@ -18,15 +18,15 @@ export default async function PendingRecipesPage() {
         recipes.map((recipe) => (
           <Card key={recipe.id} className="p-5">
             <div className="flex items-start justify-between gap-4">
-              <div>
-                <p className="font-medium text-text-primary">{recipe.title}</p>
-                <div className="mt-1 flex items-center gap-2">
+              <div className="min-w-0">
+                <p className="font-medium break-words text-text-primary">{recipe.title}</p>
+                <div className="mt-1 flex flex-wrap items-center gap-2">
                   <Badge>{recipe.category}</Badge>
                   <span className="text-caption-1-regular text-text-secondary">
                     submitted by {recipe.submitterName}
                   </span>
                 </div>
-                <p className="mt-3 whitespace-pre-line text-body-regular text-text-secondary">
+                <p className="mt-3 whitespace-pre-line break-words text-body-regular text-text-secondary">
                   {recipe.ingredients}
                 </p>
               </div>
@@ -35,18 +35,18 @@ export default async function PendingRecipesPage() {
                 <img
                   src={recipe.photoUrl}
                   alt={recipe.title}
-                  className="h-24 w-24 flex-shrink-0 rounded-2lg object-cover"
+                  className="h-16 w-16 flex-shrink-0 rounded-2lg object-cover sm:h-24 sm:w-24"
                 />
               )}
             </div>
-            <div className="mt-4 flex items-center gap-2">
+            <div className="mt-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:gap-2">
               <form action={approveRecipe.bind(null, recipe.id)}>
                 <SubmitButton variant="primary" pendingLabel="Approving…">
                   Approve
                 </SubmitButton>
               </form>
-              <form action={rejectRecipe.bind(null, recipe.id)} className="flex items-center gap-2">
-                <Input name="reason" placeholder="Reason for the submitter (required)" required className="w-72" />
+              <form action={rejectRecipe.bind(null, recipe.id)} className="flex flex-col items-start gap-2 sm:flex-row sm:items-center">
+                <Input name="reason" placeholder="Reason for the submitter (required)" required className="sm:w-72" />
                 <SubmitButton variant="danger" pendingLabel="Rejecting…">
                   Reject
                 </SubmitButton>
