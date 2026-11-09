@@ -114,9 +114,11 @@ created as `PENDING` and needs to be approved from `/admin/users`.
    redirect URIs in the Google Cloud Console.
 5. **Vercel Blob**: create a Blob store under the project's Storage tab; the
    `BLOB_READ_WRITE_TOKEN` env var is added automatically when you connect it.
-6. **Migrate**: run `npx prisma migrate deploy` against the production database
-   (Vercel can run this as part of the build command, e.g.
-   `prisma migrate deploy && next build`).
+6. **Migrate**: `vercel.json` runs `prisma migrate deploy` as part of the build, but
+   only for Production deploys (`VERCEL_ENV=production`). Preview deploys build without
+   touching a database, so a PR's unmerged migrations never reach production. If you
+   want previews to work once opened, give the Preview environment its own
+   `DATABASE_URL` / `DIRECT_URL` (for example a Neon branch), not the production ones.
 7. Deploy, then do a full walkthrough as the admin: approve a test account, publish a
    recipe, submit a recipe as a member, approve it, and confirm comments/likes work.
 
