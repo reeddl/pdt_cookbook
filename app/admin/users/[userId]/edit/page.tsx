@@ -58,7 +58,7 @@ export default async function EditMemberPage({
             id="bigId"
             name="bigId"
             defaultValue={user.bigId ?? ""}
-            className="w-full rounded-2lg bg-background-tertiary-default px-3 py-2 text-body-regular text-text-primary ring-2 ring-inset ring-transparent outline-none hover:ring-border-button-hover focus:ring-border-button-active"
+            className="w-full rounded-2lg bg-background-tertiary-default px-3 py-2 text-body-regular text-text-primary max-sm:py-2.5 max-sm:text-base ring-2 ring-inset ring-transparent outline-none hover:ring-border-button-hover focus:ring-border-button-active"
           >
             <option value="">None</option>
             {otherMembers.map((m) => (
@@ -74,7 +74,7 @@ export default async function EditMemberPage({
             id="role"
             name="role"
             defaultValue={user.role}
-            className="w-full rounded-2lg bg-background-tertiary-default px-3 py-2 text-body-regular text-text-primary ring-2 ring-inset ring-transparent outline-none hover:ring-border-button-hover focus:ring-border-button-active"
+            className="w-full rounded-2lg bg-background-tertiary-default px-3 py-2 text-body-regular text-text-primary max-sm:py-2.5 max-sm:text-base ring-2 ring-inset ring-transparent outline-none hover:ring-border-button-hover focus:ring-border-button-active"
           >
             <option value="MEMBER">Member</option>
             <option value="MODERATOR">Moderator</option>

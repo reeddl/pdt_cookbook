@@ -105,7 +105,7 @@ export function TagInput({
               type="button"
               onClick={() => removeTag(tag)}
               aria-label={`Remove tag ${tag}`}
-              className="rounded-full p-0.5 text-button-ghost-foreground/70 transition-colors hover:bg-button-ghost-hover hover:text-button-ghost-foreground"
+              className="rounded-full p-0.5 max-sm:p-1.5 text-button-ghost-foreground/70 transition-colors hover:bg-button-ghost-hover hover:text-button-ghost-foreground"
             >
               <CloseIcon className="h-3 w-3" />
             </button>
@@ -134,7 +134,7 @@ export function TagInput({
           onFocus={() => setOpen(true)}
           onBlur={() => setOpen(false)}
           onKeyDown={handleKeyDown}
-          className="min-w-[8rem] flex-1 bg-transparent px-1 py-0.5 text-body-regular text-text-primary placeholder:text-text-secondary focus:outline-none"
+          className="min-w-[8rem] flex-1 bg-transparent px-1 py-0.5 text-body-regular text-text-primary max-sm:text-base placeholder:text-text-secondary focus:outline-none"
         />
       </div>
 
@@ -155,7 +155,7 @@ export function TagInput({
             onClick={() => addTag(match)}
             onMouseEnter={() => setHighlight(i)}
             className={cn(
-              "cursor-pointer px-3 py-1.5 text-body-regular text-text-primary",
+              "cursor-pointer px-3 py-1.5 text-body-regular text-text-primary max-sm:py-3",
               i === highlight && "bg-button-ghost-background text-button-ghost-foreground"
             )}
           >

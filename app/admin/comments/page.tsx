@@ -21,7 +21,7 @@ export default async function AdminCommentsPage() {
         <p className="text-body-regular text-text-secondary">No comments yet.</p>
       ) : (
         comments.map((comment) => (
-          <Card key={comment.id} className="flex items-start justify-between gap-4 p-4">
+          <Card key={comment.id} className="flex flex-col gap-3 p-4 sm:flex-row sm:items-start sm:justify-between sm:gap-4">
             <div className="min-w-0">
               <p className="text-caption-1-regular text-text-secondary">
                 <span className="text-body-medium text-text-primary">{comment.user.name}</span> on{" "}

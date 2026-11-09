@@ -1,9 +1,10 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { SearchIcon } from "@/components/ui/icons";
+import { CloseIcon, SearchIcon } from "@/components/ui/icons";
+import { useSidebar } from "@/components/sidebar/SidebarContext";
 import { cn } from "@/lib/cn";
 
 interface SidebarRecipe {
@@ -15,10 +16,26 @@ interface SidebarRecipe {
 export function Sidebar({ recipes }: { recipes: SidebarRecipe[] }) {
   const [query, setQuery] = useState("");
   const [collapsed, setCollapsed] = useState<Record<string, boolean>>({});
-  const [mobileOpen, setMobileOpen] = useState(false);
+  const { mobileOpen, setMobileOpen } = useSidebar();
   const [searchHovered, setSearchHovered] = useState(false);
   const [searchFocused, setSearchFocused] = useState(false);
   const pathname = usePathname();
+
+  // While the phone drawer is open, keep the page behind it from scrolling and
+  // let Escape close it.
+  useEffect(() => {
+    if (!mobileOpen) return;
+    const previous = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") setMobileOpen(false);
+    };
+    window.addEventListener("keydown", onKey);
+    return () => {
+      document.body.style.overflow = previous;
+      window.removeEventListener("keydown", onKey);
+    };
+  }, [mobileOpen, setMobileOpen]);
 
   // Collapsed to a circle by default; opens on hover, on keyboard focus, and
   // stays open while there's a query so results aren't orphaned by a stray
@@ -45,15 +62,6 @@ export function Sidebar({ recipes }: { recipes: SidebarRecipe[] }) {
 
   return (
     <>
-      <button
-        type="button"
-        onClick={() => setMobileOpen(true)}
-        aria-label="Open recipe list"
-        className="fixed left-4 top-3 z-30 rounded-2lg border border-separator-border bg-background-primary-default px-3 py-2 text-body-regular text-text-primary shadow-xs sm:hidden"
-      >
-        ☰ Recipes
-      </button>
-
       {mobileOpen && (
         <div
           className="fixed inset-0 z-30 bg-black/30 sm:hidden"
@@ -72,11 +80,11 @@ export function Sidebar({ recipes }: { recipes: SidebarRecipe[] }) {
             onMouseEnter={() => setSearchHovered(true)}
             onMouseLeave={() => setSearchHovered(false)}
             className={cn(
-              "relative flex h-9 items-center transition-[width] duration-300 ease-out",
-              searchOpen ? "w-full" : "w-9"
+              "relative flex h-9 items-center transition-[width] duration-300 ease-out max-sm:h-11",
+              searchOpen ? "w-full" : "w-9 max-sm:w-11"
             )}
           >
-            <SearchIcon className="pointer-events-none absolute left-2.5 z-10 text-text-secondary" />
+            <SearchIcon className="pointer-events-none absolute left-2.5 z-10 text-text-secondary max-sm:left-3.5" />
             <input
               type="search"
               value={query}
@@ -86,7 +94,8 @@ export function Sidebar({ recipes }: { recipes: SidebarRecipe[] }) {
               aria-label="Search recipes"
               placeholder={searchOpen ? "Search recipes…" : ""}
               className={cn(
-                "h-9 w-full rounded-full bg-background-tertiary-default pl-9 text-body-regular text-text-primary ring-2 ring-inset ring-transparent outline-none placeholder:text-text-tertiary hover:ring-border-button-hover focus:ring-border-button-active",
+                // 16px on phones so iOS doesn't zoom the page when the field is focused.
+                "h-9 w-full rounded-full max-sm:h-11 max-sm:text-base bg-background-tertiary-default pl-9 text-body-regular text-text-primary ring-2 ring-inset ring-transparent outline-none placeholder:text-text-tertiary hover:ring-border-button-hover focus:ring-border-button-active",
                 searchOpen ? "pr-3" : "cursor-pointer pr-0"
               )}
             />
@@ -95,9 +104,9 @@ export function Sidebar({ recipes }: { recipes: SidebarRecipe[] }) {
             type="button"
             onClick={() => setMobileOpen(false)}
             aria-label="Close recipe list"
-            className="text-text-secondary sm:hidden"
+            className="inline-flex size-11 shrink-0 items-center justify-center rounded-2lg text-text-secondary hover:bg-background-secondary-hover hover:text-text-primary sm:hidden"
           >
-            ✕
+            <CloseIcon className="size-5" />
           </button>
         </div>
         <nav className="flex-1 overflow-y-auto px-2 pb-4">
@@ -113,7 +122,7 @@ export function Sidebar({ recipes }: { recipes: SidebarRecipe[] }) {
                   onClick={() =>
                     setCollapsed((prev) => ({ ...prev, [category]: !prev[category] }))
                   }
-                  className="flex w-full items-center justify-between rounded-md px-2 py-1.5 text-left text-caption-1-semibold uppercase tracking-wide text-text-secondary hover:text-text-primary"
+                  className="flex w-full items-center justify-between rounded-md px-2 py-1.5 text-left max-sm:py-3 text-caption-1-semibold uppercase tracking-wide text-text-secondary hover:text-text-primary"
                 >
                   {category}
                   <span className={cn("transition-transform", isCollapsed && "-rotate-90")}>
@@ -131,7 +140,7 @@ export function Sidebar({ recipes }: { recipes: SidebarRecipe[] }) {
                             href={href}
                             onClick={() => setMobileOpen(false)}
                             className={cn(
-                              "block rounded-md px-3 py-1.5 text-body-regular text-text-primary hover:bg-background-secondary-hover",
+                              "block rounded-md px-3 py-1.5 text-body-regular max-sm:py-3 text-text-primary hover:bg-background-secondary-hover",
                               active && "bg-button-ghost-background text-body-medium text-button-ghost-foreground"
                             )}
                           >

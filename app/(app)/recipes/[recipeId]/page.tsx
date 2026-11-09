@@ -68,10 +68,10 @@ export default async function RecipeDetailPage({
         <img
           src={recipe.photoUrl}
           alt={recipe.title}
-          className="mb-6 h-72 w-full rounded-3xl object-cover"
+          className="mb-6 h-56 w-full rounded-3xl object-cover sm:h-72"
         />
       )}
-      <div className="flex items-center gap-2">
+      <div className="flex flex-wrap items-center gap-2">
         <Badge>{recipe.category}</Badge>
         {recipe.tags.map((tag) => (
           <Badge key={tag}>{tag}</Badge>
@@ -79,8 +79,8 @@ export default async function RecipeDetailPage({
       </div>
 
       <div className="mt-3 flex items-start justify-between gap-4">
-        <div>
-          <h1 className="text-title-1-semibold text-text-primary">{recipe.title}</h1>
+        <div className="min-w-0">
+          <h1 className="text-title-1-semibold break-words text-text-primary">{recipe.title}</h1>
           <p className="mt-1 text-body-regular text-text-secondary">
             Submitted by{" "}
             {recipe.submittedById ? (
@@ -102,7 +102,7 @@ export default async function RecipeDetailPage({
       <div className="mt-8 grid gap-8 sm:grid-cols-[1fr_2fr]">
         <section>
           <h2 className="mb-2 text-title-3-semibold text-text-primary">Ingredients</h2>
-          <ul className="space-y-1 text-body-regular text-text-primary">
+          <ul className="space-y-1 text-body-regular break-words text-text-primary">
             {recipe.ingredients
               .split("\n")
               .filter(Boolean)
@@ -113,7 +113,7 @@ export default async function RecipeDetailPage({
         </section>
         <section>
           <h2 className="mb-2 text-title-3-semibold text-text-primary">Instructions</h2>
-          <p className="whitespace-pre-line text-body-regular text-text-primary">{recipe.instructions}</p>
+          <p className="whitespace-pre-line break-words text-body-regular text-text-primary">{recipe.instructions}</p>
         </section>
       </div>
 

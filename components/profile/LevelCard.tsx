@@ -31,7 +31,7 @@ export function LevelCard({
   const earned = new Set(earnedBadges);
 
   return (
-    <Card className="p-5">
+    <Card className="p-4 sm:p-5">
       <div className="flex flex-wrap items-center gap-x-8 gap-y-4">
         <div className="min-w-[220px] flex-1">
           <p className="text-caption-1-semibold uppercase tracking-wide text-text-secondary">Level</p>

@@ -11,22 +11,22 @@ export default async function AdminLayout({ children }: { children: React.ReactN
   const admin = isAdmin(session.user.role);
 
   return (
-    <div className="mx-auto flex min-h-screen w-full max-w-5xl flex-col px-6 py-8">
-      <header className="mb-8 flex items-center justify-between">
+    <div className="mx-auto flex min-h-screen w-full max-w-5xl flex-col px-4 py-6 sm:px-6 sm:py-8">
+      <header className="mb-6 flex flex-col-reverse items-start gap-3 sm:mb-8 sm:flex-row sm:items-center sm:justify-between">
         <div className="flex items-center gap-3">
           <ShieldLogo height={38} preload />
-          <div>
+          <div className="min-w-0">
             <h1 className="text-title-1-semibold text-text-primary">{admin ? "Admin" : "Moderation"}</h1>
             <p className="text-body-regular text-text-secondary">
               {admin ? "Manage members and the recipe catalog" : "Review recipe submissions and moderate comments"}
             </p>
           </div>
         </div>
-        <Link href="/recipes" className="text-body-regular text-button-ghost-foreground hover:underline">
+        <Link href="/recipes" className="text-body-regular text-button-ghost-foreground hover:underline max-sm:flex max-sm:min-h-11 max-sm:items-center">
           Back to cookbook
         </Link>
       </header>
-      <nav className="mb-8 flex flex-wrap gap-4 border-b border-separator-border pb-3 text-body-regular">
+      <nav className="mb-6 flex flex-wrap gap-x-4 border-b border-separator-border pb-3 text-body-regular sm:mb-8 sm:gap-y-4 max-sm:pb-1 [&>a]:max-sm:flex [&>a]:max-sm:min-h-11 [&>a]:max-sm:items-center">
         <Link href="/admin" className="text-text-primary hover:text-button-ghost-foreground">
           Overview
         </Link>

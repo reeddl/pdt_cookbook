@@ -21,7 +21,8 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
         buttonStyles.base,
         buttonStyles.size.medium,
         buttonStyles.variant[variant],
-        "px-3",
+        // Thumb-sized (44px) on phones; desktop keeps BoardUI's 36px.
+        "px-3 max-sm:min-h-11",
         className
       )}
       {...props}
