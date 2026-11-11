@@ -1,4 +1,4 @@
-# PDT Cookbook
+# Cookbook
 
 A private, invite-only recipe cookbook. Members sign in with Google, are approved by an
 admin, and can then browse recipes, comment, like, level up, and suggest new recipes for

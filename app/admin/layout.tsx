@@ -14,7 +14,7 @@ export default async function AdminLayout({ children }: { children: React.ReactN
     <div className="mx-auto flex min-h-screen w-full max-w-5xl flex-col px-4 py-6 sm:px-6 sm:py-8">
       <header className="mb-6 flex flex-col-reverse items-start gap-3 sm:mb-8 sm:flex-row sm:items-center sm:justify-between">
         <div className="flex items-center gap-3">
-          <ShieldLogo height={38} preload />
+          <ShieldLogo height={38} />
           <div className="min-w-0">
             <h1 className="text-title-1-semibold text-text-primary">{admin ? "Admin" : "Moderation"}</h1>
             <p className="text-body-regular text-text-secondary">

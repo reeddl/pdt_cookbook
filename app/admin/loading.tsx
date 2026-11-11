@@ -1,5 +1,5 @@
-import { ShieldLoader } from "@/components/brand/ShieldLoader";
+import { HexLoader } from "@/components/brand/HexLoader";
 
 export default function Loading() {
-  return <ShieldLoader size={72} />;
+  return <HexLoader />;
 }
