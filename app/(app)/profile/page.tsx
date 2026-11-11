@@ -6,7 +6,8 @@ import { FamilyTree } from "@/components/family/FamilyTree";
 import { RejectedRecipes } from "@/components/recipes/RejectedRecipes";
 import { LevelCard } from "@/components/profile/LevelCard";
 import { ProfileHeader } from "@/components/profile/ProfileHeader";
-import { getFamilyMembers, getBigChain, getLittlesTree } from "@/lib/family";
+import { FamilySelect } from "@/components/family/FamilySelect";
+import { getFamilies, getFamilyMembers, getBigChain, getLittlesTree } from "@/lib/family";
 import { getMemberProfile } from "@/lib/profile";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -23,9 +24,10 @@ export default async function ProfilePage({
   if (!session) redirect("/login");
   if (session.user.status !== "APPROVED") redirect("/recipes");
 
-  const [profile, members] = await Promise.all([
+  const [profile, members, families] = await Promise.all([
     getMemberProfile(session.user.id, { includeUnpublished: true }),
     getFamilyMembers(),
+    getFamilies(),
   ]);
 
   if (!profile) notFound();
@@ -46,6 +48,7 @@ export default async function ProfilePage({
         pledgeClass={user.pledgeClass}
         graduationYear={user.graduationYear}
         bondNumber={user.bondNumber}
+        familyName={user.family?.name}
         xp={user.xp}
       />
 
@@ -86,6 +89,7 @@ export default async function ProfilePage({
               defaultValue={user.graduationYear ?? ""}
             />
           </div>
+          <FamilySelect families={families} defaultValue={user.family?.id ?? null} />
           <SubmitButton pendingLabel="Saving…">Save changes</SubmitButton>
         </form>
       </section>
@@ -118,7 +122,7 @@ export default async function ProfilePage({
 
       <section className="mt-10">
         <h2 className="mb-4 text-title-3-semibold text-text-primary">Family</h2>
-        <FamilyTree bigChain={bigChain} littles={littles} />
+        <FamilyTree bigChain={bigChain} littles={littles} familyName={user.family?.name} />
       </section>
 
       <p className="mt-10 text-body-regular text-text-secondary">

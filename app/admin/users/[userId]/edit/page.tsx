@@ -4,6 +4,8 @@ import { prisma } from "@/lib/prisma";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { SubmitButton } from "@/components/ui/submit-button";
+import { FamilySelect } from "@/components/family/FamilySelect";
+import { getFamilies } from "@/lib/family";
 import { updateMember } from "../../actions";
 
 export default async function EditMemberPage({
@@ -14,13 +16,14 @@ export default async function EditMemberPage({
   await requireAdminPage();
   const { userId } = await params;
 
-  const [user, otherMembers] = await Promise.all([
+  const [user, otherMembers, families] = await Promise.all([
     prisma.user.findUnique({ where: { id: userId } }),
     prisma.user.findMany({
       where: { status: "APPROVED", id: { not: userId } },
       select: { id: true, name: true },
       orderBy: { name: "asc" },
     }),
+    getFamilies(),
   ]);
 
   if (!user) notFound();
@@ -52,6 +55,7 @@ export default async function EditMemberPage({
             defaultValue={user.graduationYear ?? ""}
           />
         </div>
+        <FamilySelect families={families} defaultValue={user.familyId} />
         <div>
           <Label htmlFor="bigId">Big</Label>
           <select

@@ -5,7 +5,7 @@ import { redirect } from "next/navigation";
 import { prisma } from "@/lib/prisma";
 import { requireAdmin } from "@/lib/authz";
 import { profileInputSchema } from "@/lib/validations/profile";
-import { getFamilyMembers, getLittlesTree } from "@/lib/family";
+import { getFamilyMembers, getLittlesTree, resolveFamilyId } from "@/lib/family";
 
 export async function approveUser(userId: string) {
   await requireAdmin();
@@ -46,6 +46,8 @@ export async function updateMember(userId: string, formData: FormData) {
     if (isDescendant(descendants)) bigId = null;
   }
 
+  const familyId = await resolveFamilyId(formData.get("familyId"));
+
   await prisma.user.update({
     where: { id: userId },
     data: {
@@ -55,9 +57,11 @@ export async function updateMember(userId: string, formData: FormData) {
       graduationYear: profile.graduationYear,
       role,
       bigId,
+      familyId,
     },
   });
 
   revalidatePath("/admin/users");
+  revalidatePath(`/profile/${userId}`);
   redirect("/admin/users");
 }

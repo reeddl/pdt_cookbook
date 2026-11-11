@@ -153,6 +153,15 @@ Level 2 is 10 XP; levels 1–10 are Dishwasher, then Prep cook, Line cook, Sous 
 and Head chef every ten levels (max 50). Moderators deleting a comment also removes
 the XP it earned (replies are deleted with their parent comment).
 
+## Families
+
+Each member can belong to one family (`Family` table, `User.familyId`). Members pick
+theirs from a dropdown on their own profile; admins can set it from `/admin/users` → Edit.
+The family shows as a badge on the profile and in the admin roster. The six starting
+families are inserted by the migration that creates the table, so a deploy adds them.
+To add or rename one later, add or edit a row in `Family` (no migration needed).
+Big/little links (`User.bigId`) are separate and are what the profile's family tree draws.
+
 ## Roles
 
 | Role | Can do |

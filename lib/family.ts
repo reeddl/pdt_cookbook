@@ -55,3 +55,27 @@ export function getLittlesTree(userId: string, members: FamilyMember[]): LittleN
 
   return build(userId, new Set([userId]));
 }
+
+export interface FamilyOption {
+  id: string;
+  name: string;
+}
+
+/** Every family, in the order they should appear in dropdowns. */
+export async function getFamilies(): Promise<FamilyOption[]> {
+  return prisma.family.findMany({
+    select: { id: true, name: true },
+    orderBy: [{ sortOrder: "asc" }, { name: "asc" }],
+  });
+}
+
+/**
+ * Turns the dropdown's raw form value into a family id that exists, or null.
+ * An empty value means "no family"; an unknown id (stale form, tampering) is
+ * treated the same way rather than failing the whole save.
+ */
+export async function resolveFamilyId(raw: FormDataEntryValue | null): Promise<string | null> {
+  if (typeof raw !== "string" || !raw) return null;
+  const family = await prisma.family.findUnique({ where: { id: raw }, select: { id: true } });
+  return family?.id ?? null;
+}

@@ -16,6 +16,7 @@ export default async function AdminUsersPage() {
     prisma.user.findMany({
       where: { status: { in: ["APPROVED", "REJECTED"] } },
       orderBy: { name: "asc" },
+      include: { family: { select: { name: true } } },
     }),
   ]);
 
@@ -66,6 +67,7 @@ export default async function AdminUsersPage() {
                 <p className="text-body-regular break-all text-text-secondary">{user.email}</p>
               </div>
               <div className="flex flex-wrap items-center gap-2">
+                {user.family && <Badge>{user.family.name}</Badge>}
                 <Badge>{user.role}</Badge>
                 <Badge className={user.status === "REJECTED" ? "bg-background-tertiary-error text-text-error-primary" : ""}>
                   {user.status}
