@@ -35,6 +35,7 @@ export default async function MemberProfilePage({
         pledgeClass={user.pledgeClass}
         graduationYear={user.graduationYear}
         bondNumber={user.bondNumber}
+        familyName={user.family?.name}
         xp={user.xp}
       />
 
@@ -69,7 +70,7 @@ export default async function MemberProfilePage({
 
       <section className="mt-10">
         <h2 className="mb-4 text-title-3-semibold text-text-primary">Family</h2>
-        <FamilyTree bigChain={bigChain} littles={littles} />
+        <FamilyTree bigChain={bigChain} littles={littles} familyName={user.family?.name} />
       </section>
     </div>
   );

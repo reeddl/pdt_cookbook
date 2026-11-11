@@ -20,16 +20,30 @@ function LittleList({ nodes }: { nodes: LittleNode[] }) {
 export function FamilyTree({
   bigChain,
   littles,
+  familyName,
 }: {
   bigChain: FamilyMember[];
   littles: LittleNode[];
+  familyName?: string | null;
 }) {
+  const familyLine = familyName ? (
+    <p className="text-body-regular text-text-primary">
+      <span className="text-text-secondary">Family:</span> {familyName}
+    </p>
+  ) : null;
+
   if (bigChain.length === 0 && littles.length === 0) {
-    return <p className="text-body-regular text-text-secondary">No family connections recorded yet.</p>;
+    return (
+      <div className="space-y-2">
+        {familyLine}
+        <p className="text-body-regular text-text-secondary">No big/little connections recorded yet.</p>
+      </div>
+    );
   }
 
   return (
     <div className="space-y-4">
+      {familyLine}
       {bigChain.length > 0 && (
         <div>
           <p className="mb-1 text-caption-1-semibold uppercase tracking-wide text-text-secondary">

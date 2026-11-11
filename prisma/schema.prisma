@@ -53,6 +53,12 @@ model User {
   big     User?   @relation("BigLittle", fields: [bigId], references: [id], onDelete: SetNull)
   littles User[]  @relation("BigLittle")
 
+  /// The family (lineage) this member belongs to. Families are rows, not an enum,
+  /// so they can be added or renamed without a migration and a family tree view
+  /// can group members by family and draw them with the big/little links above.
+  familyId String?
+  family   Family? @relation(fields: [familyId], references: [id], onDelete: SetNull)
+
   accounts Account[]
   sessions Session[]
 
@@ -69,6 +75,18 @@ model User {
 
   @@index([status])
   @@index([bigId])
+  @@index([familyId])
+}
+
+/// A family (lineage) members belong to. The initial six are inserted by the
+/// migration that creates this table, so production gets them on deploy.
+model Family {
+  id        String   @id @default(cuid())
+  name      String   @unique
+  /// Order the family appears in dropdowns and lists.
+  sortOrder Int      @default(0)
+  members   User[]
+  createdAt DateTime @default(now())
 }
 
 model Recipe {
