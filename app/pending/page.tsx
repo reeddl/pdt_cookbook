@@ -14,7 +14,7 @@ export default async function PendingPage() {
     <div className="flex min-h-screen flex-1 items-center justify-center px-4">
       <Card className="w-full max-w-md p-8 text-center">
         <div className="mb-4 flex justify-center">
-          <ShieldLogo height={64} preload />
+          <ShieldLogo height={64} />
         </div>
         <h1 className="text-title-1-semibold text-text-primary">
           Access denied

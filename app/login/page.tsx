@@ -8,9 +8,9 @@ export default function LoginPage() {
     <div className="flex min-h-screen flex-1 items-center justify-center px-4">
       <Card className="w-full max-w-sm p-8 text-center">
         <div className="mb-4 flex justify-center">
-          <ShieldLogo height={72} preload />
+          <ShieldLogo height={72} />
         </div>
-        <h1 className="text-title-1-semibold text-text-primary">PDT Cookbook</h1>
+        <h1 className="text-title-1-semibold text-text-primary">Cookbook</h1>
         <p className="mt-2 text-body-regular text-text-secondary">
           Sign in with your Google account to view the recipe collection.
         </p>
