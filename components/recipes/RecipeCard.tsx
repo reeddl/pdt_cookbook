@@ -36,7 +36,8 @@ export function RecipeCard({
       )}
       <div className="p-4">
         <Link
-          href={`/recipes/${id}`}
+          // Pending recipes have no public page yet; their author opens the edit form.
+          href={status === "PENDING" ? `/recipes/${id}/edit` : `/recipes/${id}`}
           className="font-medium break-words text-text-primary after:absolute after:inset-0 after:content-['']"
         >
           {title}

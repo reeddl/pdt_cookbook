@@ -157,9 +157,14 @@ the XP it earned (replies are deleted with their parent comment).
 
 | Role | Can do |
 | --- | --- |
-| Member | Browse, comment, like, suggest recipes (after admin approval of their account) |
+| Member | Browse, comment, like, suggest recipes (after admin approval of their account), and edit recipes they submitted |
 | Moderator | Everything a member can, plus approve/reject recipe submissions and delete any comment (`/admin`, `/admin/recipes/pending`, `/admin/comments`) |
 | Admin | Everything, plus approve members, change roles, and create/edit/delete recipes |
+
+Anyone who can edit a recipe sees an **Edit** button on its page (`/recipes/[id]/edit`).
+Editing a published recipe saves straight to the cookbook and keeps its likes and comments;
+editing one that's awaiting review keeps it in the queue. A rejected recipe is still fixed
+through **Edit & resubmit** on the author's profile, which sends it back for review.
 
 Admins assign the Moderator role from `/admin/users` → Edit. Role changes can take up to an hour to appear for a
 signed-in user (the role is cached in their session) unless they sign out and back in.

@@ -3,6 +3,9 @@ import { notFound } from "next/navigation";
 import { prisma } from "@/lib/prisma";
 import { auth } from "@/auth";
 import { isProfileComplete, isStaff } from "@/lib/authz";
+import { canEditRecipe } from "@/lib/recipe-edit/permissions";
+import { buttonStyles } from "@/components/base/buttons/button";
+import { cx } from "@/utils/cx";
 import { Badge } from "@/components/ui/card";
 import { LevelBadge } from "@/components/level/LevelBadge";
 import { LikeButton } from "@/components/likes/LikeButton";
@@ -11,10 +14,12 @@ import { CommentThread } from "@/components/comments/CommentThread";
 
 export default async function RecipeDetailPage({
   params,
+  searchParams,
 }: {
   params: Promise<{ recipeId: string }>;
+  searchParams: Promise<{ edited?: string }>;
 }) {
-  const { recipeId } = await params;
+  const [{ recipeId }, { edited }] = await Promise.all([params, searchParams]);
   const session = await auth();
   const approved = session?.user.status === "APPROVED";
 
@@ -47,6 +52,7 @@ export default async function RecipeDetailPage({
   ]);
 
   if (!recipe || recipe.status !== "PUBLISHED") notFound();
+  const canEdit = canEditRecipe(session?.user, recipe);
 
   const likedIds = new Set(myCommentLikes.map((l) => l.commentId));
   const comments = buildCommentTree(
@@ -63,6 +69,11 @@ export default async function RecipeDetailPage({
 
   return (
     <article>
+      {edited && canEdit && (
+        <div className="mb-6 rounded-3xl bg-status-lime-background p-4 text-body-regular text-status-lime-text">
+          Your changes are saved.
+        </div>
+      )}
       {recipe.photoUrl && (
         // eslint-disable-next-line @next/next/no-img-element
         <img
@@ -96,7 +107,17 @@ export default async function RecipeDetailPage({
             {recipe.submittedBy && <LevelBadge xp={recipe.submittedBy.xp} className="ml-1.5" />}
           </p>
         </div>
-        {approved ? <LikeButton recipeId={recipe.id} isLiked={Boolean(like)} likeCount={likeCount} /> : <span className="whitespace-nowrap text-body-regular text-text-secondary">♡ {likeCount}</span>}
+        <div className="flex shrink-0 items-center gap-2">
+          {canEdit && (
+            <Link
+              href={`/recipes/${recipe.id}/edit`}
+              className={cx(buttonStyles.base, buttonStyles.size.medium, buttonStyles.variant.secondary, "px-3 max-sm:min-h-11")}
+            >
+              Edit
+            </Link>
+          )}
+          {approved ? <LikeButton recipeId={recipe.id} isLiked={Boolean(like)} likeCount={likeCount} /> : <span className="whitespace-nowrap text-body-regular text-text-secondary">♡ {likeCount}</span>}
+        </div>
       </div>
 
       <div className="mt-8 grid gap-8 sm:grid-cols-[1fr_2fr]">
