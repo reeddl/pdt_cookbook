@@ -14,15 +14,13 @@ import { resubmitRecipe, saveRecipeEdits } from "./actions";
  */
 export default async function EditRecipePage({
   params,
-  searchParams,
 }: {
   params: Promise<{ recipeId: string }>;
-  searchParams: Promise<{ saved?: string }>;
 }) {
   const session = await auth();
   if (!session) redirect("/login");
   if (session.user.status !== "APPROVED") redirect("/recipes");
-  const [{ recipeId }, { saved }] = await Promise.all([params, searchParams]);
+  const { recipeId } = await params;
 
   const [recipe, tagSuggestions] = await Promise.all([
     prisma.recipe.findUnique({ where: { id: recipeId } }),
@@ -64,12 +62,11 @@ export default async function EditRecipePage({
   }
 
   const pending = recipe.status === "PENDING";
-  const backHref = pending ? "/profile" : `/recipes/${recipe.id}`;
 
   return (
     <div>
-      <Link href={backHref} className="text-body-regular text-button-ghost-foreground hover:underline">
-        ← {pending ? "Back to your profile" : "Back to the recipe"}
+      <Link href={`/recipes/${recipe.id}`} className="text-body-regular text-button-ghost-foreground hover:underline">
+        ← Back to the recipe
       </Link>
       <h1 className="mt-3 mb-2 text-title-1-semibold break-words text-text-primary">Edit recipe</h1>
       <p className="mb-6 text-body-regular text-text-secondary">
@@ -78,11 +75,6 @@ export default async function EditRecipePage({
           : "Changes show in the cookbook as soon as you save. Likes and comments stay with the recipe."}
         {!isAuthor && ` You're editing ${recipe.submitterName}'s recipe as an admin.`}
       </p>
-      {saved && (
-        <div className="mb-6 rounded-3xl bg-status-lime-background p-4 text-body-regular text-status-lime-text">
-          Saved. It&apos;s still awaiting review.
-        </div>
-      )}
       <RecipeForm
         action={saveRecipeEdits.bind(null, recipe.id)}
         submitLabel="Save changes"

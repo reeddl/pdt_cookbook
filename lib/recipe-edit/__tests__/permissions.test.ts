@@ -1,6 +1,6 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { canEditRecipe } from "../permissions";
+import { canEditRecipe, canViewRecipe } from "../permissions";
 
 const member = { id: "u1", role: "MEMBER" as const, status: "APPROVED" };
 const otherMember = { id: "u2", role: "MEMBER" as const, status: "APPROVED" };
@@ -37,4 +37,21 @@ test("signed-out and unapproved accounts can't edit", () => {
   assert.equal(canEditRecipe(null, published), false);
   assert.equal(canEditRecipe({ ...member, status: "PENDING" }, published), false);
   assert.equal(canEditRecipe({ ...admin, status: "PENDING" }, published), false);
+});
+
+test("a pending recipe's preview is open to reviewers and its author only", () => {
+  const pending = { submittedById: "u1", status: "PENDING" as const };
+  assert.equal(canViewRecipe(admin, pending), true);
+  assert.equal(canViewRecipe(moderator, pending), true);
+  assert.equal(canViewRecipe(member, pending), true);
+  assert.equal(canViewRecipe(otherMember, pending), false);
+  assert.equal(canViewRecipe(null, pending), false);
+  assert.equal(canViewRecipe({ ...moderator, status: "PENDING" }, pending), false);
+});
+
+test("published recipes are open to everyone; rejected ones to no one", () => {
+  assert.equal(canViewRecipe(otherMember, published), true);
+  assert.equal(canViewRecipe(null, published), true);
+  assert.equal(canViewRecipe(admin, { ...published, status: "REJECTED" }), false);
+  assert.equal(canViewRecipe(member, { ...published, status: "REJECTED" }), false);
 });

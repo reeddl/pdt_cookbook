@@ -41,14 +41,10 @@ export async function saveRecipeEdits(recipeId: string, formData: FormData) {
   });
   if (count === 0) throw new Error("You can't edit this recipe");
 
-  const recipe = await prisma.recipe.findUniqueOrThrow({
-    where: { id: recipeId },
-    select: { status: true },
-  });
-
   // Titles and categories also show in the sidebar, cards and profiles.
   revalidatePath("/", "layout");
-  redirect(recipe.status === "PUBLISHED" ? `/recipes/${recipeId}?edited=1` : `/recipes/${recipeId}/edit?saved=1`);
+  // A pending recipe's page is its review preview, so both land on the recipe.
+  redirect(`/recipes/${recipeId}?edited=1`);
 }
 
 /**

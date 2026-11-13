@@ -24,3 +24,19 @@ export function canEditRecipe(
  * their own "edit and resubmit" flow, which sends them back for review.
  */
 export const EDITABLE_STATUSES: RecipeStatus[] = ["PUBLISHED", "PENDING"];
+
+/**
+ * Who may open a recipe's page. Published recipes are open to every member.
+ * A recipe awaiting review is shown as a preview of its live page to the
+ * reviewers (admins and moderators) and to its own author. Rejected recipes
+ * have no page; their author fixes them from the edit form.
+ */
+export function canViewRecipe(
+  user: { id: string; role: UserRole; status: string } | null | undefined,
+  recipe: { submittedById: string | null; status: RecipeStatus }
+): boolean {
+  if (recipe.status === "PUBLISHED") return true;
+  if (recipe.status !== "PENDING" || !user || user.status !== "APPROVED") return false;
+  if (user.role === "ADMIN" || user.role === "MODERATOR") return true;
+  return recipe.submittedById !== null && recipe.submittedById === user.id;
+}

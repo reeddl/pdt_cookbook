@@ -3,7 +3,7 @@ import { notFound } from "next/navigation";
 import { prisma } from "@/lib/prisma";
 import { auth } from "@/auth";
 import { isProfileComplete, isStaff } from "@/lib/authz";
-import { canEditRecipe } from "@/lib/recipe-edit/permissions";
+import { canEditRecipe, canViewRecipe } from "@/lib/recipe-edit/permissions";
 import { buttonStyles } from "@/components/base/buttons/button";
 import { cx } from "@/utils/cx";
 import { Badge } from "@/components/ui/card";
@@ -11,6 +11,7 @@ import { LevelBadge } from "@/components/level/LevelBadge";
 import { LikeButton } from "@/components/likes/LikeButton";
 import { buildCommentTree } from "@/lib/commentTree";
 import { CommentThread } from "@/components/comments/CommentThread";
+import { ReviewPanel } from "@/components/recipes/ReviewPanel";
 
 export default async function RecipeDetailPage({
   params,
@@ -51,8 +52,11 @@ export default async function RecipeDetailPage({
     approved && session ? isProfileComplete(session.user.id) : false,
   ]);
 
-  if (!recipe || recipe.status !== "PUBLISHED") notFound();
+  if (!recipe || !canViewRecipe(session?.user, recipe)) notFound();
   const canEdit = canEditRecipe(session?.user, recipe);
+  // A pending recipe renders exactly as its live page will, for review.
+  const preview = recipe.status === "PENDING";
+  const isReviewer = preview && isStaff(session?.user.role);
 
   const likedIds = new Set(myCommentLikes.map((l) => l.commentId));
   const comments = buildCommentTree(
@@ -73,6 +77,13 @@ export default async function RecipeDetailPage({
         <div className="mb-6 rounded-3xl bg-status-lime-background p-4 text-body-regular text-status-lime-text">
           Your changes are saved.
         </div>
+      )}
+      {preview && (
+        <ReviewPanel
+          recipeId={recipe.id}
+          isReviewer={isReviewer}
+          submittedAt={recipe.createdAt}
+        />
       )}
       {recipe.photoUrl && (
         // eslint-disable-next-line @next/next/no-img-element
@@ -116,7 +127,7 @@ export default async function RecipeDetailPage({
               Edit
             </Link>
           )}
-          {approved ? <LikeButton recipeId={recipe.id} isLiked={Boolean(like)} likeCount={likeCount} /> : <span className="whitespace-nowrap text-body-regular text-text-secondary">♡ {likeCount}</span>}
+          {approved && !preview ? <LikeButton recipeId={recipe.id} isLiked={Boolean(like)} likeCount={likeCount} /> : <span className="whitespace-nowrap text-body-regular text-text-secondary">♡ {likeCount}</span>}
         </div>
       </div>
 
@@ -138,14 +149,20 @@ export default async function RecipeDetailPage({
         </section>
       </div>
 
-      <CommentThread
-        recipeId={recipe.id}
-        comments={comments}
-        totalComments={rawComments.length}
-        canComment={canComment}
-        canModerate={isStaff(session?.user.role)}
-        viewOnly={!approved}
-      />
+      {preview ? (
+        <p className="mt-10 border-t border-separator-border pt-6 text-body-regular text-text-secondary">
+          Likes and comments open once the recipe is published.
+        </p>
+      ) : (
+        <CommentThread
+          recipeId={recipe.id}
+          comments={comments}
+          totalComments={rawComments.length}
+          canComment={canComment}
+          canModerate={isStaff(session?.user.role)}
+          viewOnly={!approved}
+        />
+      )}
     </article>
   );
 }

@@ -75,7 +75,9 @@ npx prisma db seed   # optional: adds a handful of sample recipes
 
 ### 6. Vercel Blob (photo uploads)
 
-Photo upload only works with a real `BLOB_READ_WRITE_TOKEN`. You can leave it blank
+Photo upload only works with a real `BLOB_READ_WRITE_TOKEN` (and, on Vercel, a **public**
+Blob store connected to the project). If it's missing, the photo picker says so.
+Large phone photos are scaled down to 2000px and saved as JPEG in the browser before upload. You can leave it blank
 for local dev if you don't need to test photo uploads — everything else works without it.
 To enable it: create a Blob store in the [Vercel dashboard](https://vercel.com/dashboard)
 under Storage, and copy the token into `.env`.
@@ -160,6 +162,11 @@ the XP it earned (replies are deleted with their parent comment).
 | Member | Browse, comment, like, suggest recipes (after admin approval of their account), and edit recipes they submitted |
 | Moderator | Everything a member can, plus approve/reject recipe submissions and delete any comment (`/admin`, `/admin/recipes/pending`, `/admin/comments`) |
 | Admin | Everything, plus approve members, change roles, and create/edit/delete recipes |
+
+Reviewing a submission: in `/admin/recipes/pending`, **Open full preview** shows the
+recipe's own page exactly as it will look once published, with Approve and Reject on top.
+The submitter can open the same preview from their profile. Approve and Reject only act
+on recipes still awaiting review, so two reviewers can't overrule each other by accident.
 
 Anyone who can edit a recipe sees an **Edit** button on its page (`/recipes/[id]/edit`).
 Editing a published recipe saves straight to the cookbook and keeps its likes and comments;
