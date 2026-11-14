@@ -75,12 +75,18 @@ npx prisma db seed   # optional: adds a handful of sample recipes
 
 ### 6. Vercel Blob (photo uploads)
 
-Photo upload only works with a real `BLOB_READ_WRITE_TOKEN` (and, on Vercel, a **public**
-Blob store connected to the project). If it's missing, the photo picker says so.
-Large phone photos are scaled down to 2000px and saved as JPEG in the browser before upload. You can leave it blank
-for local dev if you don't need to test photo uploads — everything else works without it.
+Photo upload needs a **public** Blob store connected to the project, reached either with
+`BLOB_READ_WRITE_TOKEN` or with `BLOB_STORE_ID` (Vercel's OIDC sign-in, used first when set).
+If neither is set, the photo picker says so. Photos are scaled down to 2000px and saved as
+JPEG in the browser, then sent through `/api/blob/upload`, which stores them; that keeps
+each photo under Vercel's 4.5 MB request limit. You can leave it blank for local dev if you
+don't need to test photo uploads; everything else works without it.
 To enable it: create a Blob store in the [Vercel dashboard](https://vercel.com/dashboard)
-under Storage, and copy the token into `.env`.
+under Storage, and copy the token into `.env` (without quotes).
+
+If uploads fail on the live site, sign in as an admin and open `/api/blob/upload?check=1`.
+It saves and deletes a tiny test file and says in plain words what Vercel answered: a
+stale key, a key from another store, quotes around the key, or a private store.
 
 ### 7. Run the dev server
 
