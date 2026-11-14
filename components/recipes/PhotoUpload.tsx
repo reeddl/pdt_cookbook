@@ -1,7 +1,6 @@
 "use client";
 
 import { useState } from "react";
-import { upload } from "@vercel/blob/client";
 import { Spinner } from "@/components/ui/spinner";
 import { MAX_PHOTO_BYTES, MAX_PHOTO_DIMENSION, PHOTO_TYPES } from "@/lib/photos";
 
@@ -48,7 +47,12 @@ async function preparePhoto(file: File): Promise<File> {
   ctx.drawImage(bitmap, 0, 0, canvas.width, canvas.height);
   bitmap.close();
 
-  const blob = await new Promise<Blob | null>((resolve) => canvas.toBlob(resolve, "image/jpeg", 0.85));
+  // Step the quality down until the photo fits under the upload limit.
+  let blob: Blob | null = null;
+  for (const quality of [0.85, 0.72, 0.6]) {
+    blob = await new Promise<Blob | null>((resolve) => canvas.toBlob(resolve, "image/jpeg", quality));
+    if (!blob || blob.size <= MAX_PHOTO_BYTES) break;
+  }
   if (!blob) return file;
   const name = file.name.replace(/\.[^.]+$/, "") + ".jpg";
   return new File([blob], name, { type: "image/jpeg" });
@@ -88,11 +92,15 @@ export function PhotoUpload({ name, defaultValue }: PhotoUploadProps) {
           `That photo is ${(photo.size / 1024 / 1024).toFixed(1)} MB. The limit is ${MAX_PHOTO_BYTES / 1024 / 1024} MB.`
         );
       }
-      const blob = await upload(photo.name, photo, {
-        access: "public",
-        handleUploadUrl: "/api/blob/upload",
-      });
-      setUrl(blob.url);
+      const body = new FormData();
+      body.append("file", photo, photo.name);
+      const res = await fetch("/api/blob/upload", { method: "POST", body });
+      const data = (await res.json().catch(() => null)) as { url?: string; error?: string } | null;
+      if (!res.ok || !data?.url) {
+        // The server words its errors for the person picking the photo.
+        throw new PhotoError(data?.error ?? `Upload failed (error ${res.status}). Please try again.`);
+      }
+      setUrl(data.url);
     } catch (err) {
       console.error("Photo upload failed:", err);
       if (err instanceof PhotoError) {
