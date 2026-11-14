@@ -1,10 +1,15 @@
 import { NextResponse } from "next/server";
-import type { NextRequest } from "next/server";
 import { auth } from "@/auth";
 
-export async function proxy(request: NextRequest) {
+// Wrapping the proxy in auth() (rather than calling `await auth()` inside it)
+// lets Auth.js write the refreshed session cookie onto every response. That
+// rolling refresh is what keeps a returning visitor signed in: each visit pushes
+// the cookie's expiry another 30 days out. A bare `await auth()` here reads the
+// session but throws the refreshed cookie away, so the cookie expired a fixed
+// time after sign-in no matter how often the site was used.
+export const proxy = auth((request) => {
   const { pathname } = request.nextUrl;
-  const session = await auth();
+  const session = request.auth;
 
   const isPublic = pathname === "/login" || pathname === "/pending";
 
@@ -46,7 +51,7 @@ export async function proxy(request: NextRequest) {
   }
 
   return NextResponse.next();
-}
+});
 
 export const config = {
   matcher: ["/((?!api/auth|_next/static|_next/image|favicon.ico|icon.svg|apple-icon.png).*)"],
