@@ -11,6 +11,7 @@ export interface MemberProfile {
     pledgeClass: string | null;
     graduationYear: number | null;
     xp: number;
+    family: { id: string; name: string } | null;
   };
   recipes: {
     id: string;
@@ -49,6 +50,7 @@ export async function getMemberProfile(
       pledgeClass: true,
       graduationYear: true,
       xp: true,
+      family: { select: { id: true, name: true } },
     },
   });
 

@@ -8,6 +8,7 @@ interface ProfileHeaderProps {
   pledgeClass: string | null;
   graduationYear: number | null;
   bondNumber: string | null;
+  familyName?: string | null;
   xp: number;
 }
 
@@ -18,6 +19,7 @@ export function ProfileHeader({
   pledgeClass,
   graduationYear,
   bondNumber,
+  familyName,
   xp,
 }: ProfileHeaderProps) {
   return (
@@ -41,6 +43,7 @@ export function ProfileHeader({
         </h1>
         {email && <p className="text-body-regular break-all text-text-secondary">{email}</p>}
         <div className="mt-2 flex flex-wrap gap-2">
+          {familyName && <Badge>{familyName}</Badge>}
           {pledgeClass && <Badge>{pledgeClass}</Badge>}
           {graduationYear && <Badge>Class of {graduationYear}</Badge>}
           {bondNumber && <Badge>Bond #{bondNumber}</Badge>}

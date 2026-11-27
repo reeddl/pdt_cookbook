@@ -7,7 +7,7 @@ import { RejectedRecipes } from "@/components/recipes/RejectedRecipes";
 import { LevelCard } from "@/components/profile/LevelCard";
 import { ProfileHeader } from "@/components/profile/ProfileHeader";
 import { ProfileDetails } from "@/components/profile/ProfileDetails";
-import { getFamilyMembers, getBigChain, getLittlesTree } from "@/lib/family";
+import { getFamilies, getFamilyMembers, getBigChain, getLittlesTree } from "@/lib/family";
 import { getMemberProfile } from "@/lib/profile";
 
 export default async function ProfilePage({
@@ -20,9 +20,10 @@ export default async function ProfilePage({
   if (!session) redirect("/login");
   if (session.user.status !== "APPROVED") redirect("/recipes");
 
-  const [profile, members] = await Promise.all([
+  const [profile, members, families] = await Promise.all([
     getMemberProfile(session.user.id, { includeUnpublished: true }),
     getFamilyMembers(),
+    getFamilies(),
   ]);
 
   if (!profile) notFound();
@@ -43,6 +44,7 @@ export default async function ProfilePage({
         pledgeClass={user.pledgeClass}
         graduationYear={user.graduationYear}
         bondNumber={user.bondNumber}
+        familyName={user.family?.name}
         xp={user.xp}
       />
 
@@ -62,6 +64,8 @@ export default async function ProfilePage({
         bondNumber={user.bondNumber}
         pledgeClass={user.pledgeClass}
         graduationYear={user.graduationYear}
+        family={user.family}
+        families={families}
       />
 
       <section className="mt-10">
@@ -92,7 +96,7 @@ export default async function ProfilePage({
 
       <section className="mt-10">
         <h2 className="mb-4 text-title-3-semibold text-text-primary">Family</h2>
-        <FamilyTree bigChain={bigChain} littles={littles} />
+        <FamilyTree bigChain={bigChain} littles={littles} familyName={user.family?.name} />
       </section>
 
       <p className="mt-10 text-body-regular text-text-secondary">

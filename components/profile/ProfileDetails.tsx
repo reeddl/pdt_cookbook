@@ -6,12 +6,16 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { SubmitButton } from "@/components/ui/submit-button";
+import { FamilySelect } from "@/components/family/FamilySelect";
+import type { FamilyOption } from "@/lib/family";
 
 interface ProfileDetailsProps {
   name: string;
   bondNumber: string | null;
   pledgeClass: string | null;
   graduationYear: number | null;
+  family: FamilyOption | null;
+  families: FamilyOption[];
 }
 
 /**
@@ -24,6 +28,8 @@ export function ProfileDetails({
   bondNumber,
   pledgeClass,
   graduationYear,
+  family,
+  families,
 }: ProfileDetailsProps) {
   const [editing, setEditing] = useState(false);
   // Only move focus after the member switches modes, not on first render.
@@ -83,6 +89,7 @@ export function ProfileDetails({
               defaultValue={graduationYear ?? ""}
             />
           </div>
+          <FamilySelect families={families} defaultValue={family?.id ?? null} />
           <div className="flex flex-col gap-3 sm:flex-row">
             <SubmitButton pendingLabel="Saving…">Save changes</SubmitButton>
             <Button variant="ghost" onClick={() => switchTo(false)}>
@@ -97,9 +104,8 @@ export function ProfileDetails({
           </Detail>
           <Detail label="Bond number">{bondNumber}</Detail>
           <Detail label="Pledge class">{pledgeClass}</Detail>
-          <Detail label="Graduation year" className="col-span-2">
-            {graduationYear}
-          </Detail>
+          <Detail label="Graduation year">{graduationYear}</Detail>
+          <Detail label="Family">{family?.name}</Detail>
         </dl>
       )}
     </section>
