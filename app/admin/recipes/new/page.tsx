@@ -1,7 +1,7 @@
 import { requireAdminPage } from "@/lib/authz";
 import { auth } from "@/auth";
 import { getTagSuggestions } from "@/lib/recipes";
-import { RecipeForm } from "@/components/recipes/RecipeForm";
+import { RecipeImportForm } from "@/components/recipes/RecipeImportForm";
 import { createRecipe } from "../actions";
 
 export default async function NewRecipePage() {
@@ -11,7 +11,7 @@ export default async function NewRecipePage() {
   return (
     <div>
       <h2 className="mb-6 text-title-2-semibold text-text-primary">New recipe</h2>
-      <RecipeForm
+      <RecipeImportForm
         action={createRecipe}
         submitLabel="Publish recipe"
         pendingLabel="Publishing…"

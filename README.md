@@ -1,4 +1,4 @@
-# PDT Cookbook
+# Cookbook
 
 A private, invite-only recipe cookbook. Members sign in with Google, are approved by an
 admin, and can then browse recipes, comment, like, level up, and suggest new recipes for
@@ -75,10 +75,18 @@ npx prisma db seed   # optional: adds a handful of sample recipes
 
 ### 6. Vercel Blob (photo uploads)
 
-Photo upload only works with a real `BLOB_READ_WRITE_TOKEN`. You can leave it blank
-for local dev if you don't need to test photo uploads — everything else works without it.
+Photo upload needs a **public** Blob store connected to the project, reached either with
+`BLOB_READ_WRITE_TOKEN` or with `BLOB_STORE_ID` (Vercel's OIDC sign-in, used first when set).
+If neither is set, the photo picker says so. Photos are scaled down to 2000px and saved as
+JPEG in the browser, then sent through `/api/blob/upload`, which stores them; that keeps
+each photo under Vercel's 4.5 MB request limit. You can leave it blank for local dev if you
+don't need to test photo uploads; everything else works without it.
 To enable it: create a Blob store in the [Vercel dashboard](https://vercel.com/dashboard)
-under Storage, and copy the token into `.env`.
+under Storage, and copy the token into `.env` (without quotes).
+
+If uploads fail on the live site, sign in as an admin and open `/api/blob/upload?check=1`.
+It saves and deletes a tiny test file and says in plain words what Vercel answered: a
+stale key, a key from another store, quotes around the key, or a private store.
 
 ### 7. Run the dev server
 
@@ -166,9 +174,19 @@ Big/little links (`User.bigId`) are separate and are what the profile's family t
 
 | Role | Can do |
 | --- | --- |
-| Member | Browse, comment, like, suggest recipes (after admin approval of their account) |
+| Member | Browse, comment, like, suggest recipes (after admin approval of their account), and edit recipes they submitted |
 | Moderator | Everything a member can, plus approve/reject recipe submissions and delete any comment (`/admin`, `/admin/recipes/pending`, `/admin/comments`) |
 | Admin | Everything, plus approve members, change roles, and create/edit/delete recipes |
+
+Reviewing a submission: in `/admin/recipes/pending`, **Open full preview** shows the
+recipe's own page exactly as it will look once published, with Approve and Reject on top.
+The submitter can open the same preview from their profile. Approve and Reject only act
+on recipes still awaiting review, so two reviewers can't overrule each other by accident.
+
+Anyone who can edit a recipe sees an **Edit** button on its page (`/recipes/[id]/edit`).
+Editing a published recipe saves straight to the cookbook and keeps its likes and comments;
+editing one that's awaiting review keeps it in the queue. A rejected recipe is still fixed
+through **Edit & resubmit** on the author's profile, which sends it back for review.
 
 Admins assign the Moderator role from `/admin/users` → Edit. Role changes can take up to an hour to appear for a
 signed-in user (the role is cached in their session) unless they sign out and back in.

@@ -32,7 +32,12 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
   providers: [Google],
   session: {
     strategy: "jwt",
-    maxAge: 60 * 60, // 1 hour — keeps status/role claims from going stale for long after an admin action
+    // Stay signed in on the same browser for 30 days after the last visit. The
+    // cookie is re-issued with a fresh 30-day expiry on every page load (see
+    // proxy.ts), so regular visitors never have to sign in again. Status and
+    // role don't go stale: the jwt callback below re-reads them from the
+    // database on every request, so an admin's change applies on the next page.
+    maxAge: 30 * 24 * 60 * 60,
   },
   pages: {
     signIn: "/login",
@@ -61,11 +66,13 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
         where: { email: token.email },
       });
 
-      if (dbUser) {
-        token.id = dbUser.id;
-        token.status = dbUser.status;
-        token.role = dbUser.role;
-      }
+      // The account was deleted: end the session rather than keep a long-lived
+      // cookie carrying the old claims. Returning null clears the cookie.
+      if (!dbUser) return null;
+
+      token.id = dbUser.id;
+      token.status = dbUser.status;
+      token.role = dbUser.role;
 
       return token;
     },

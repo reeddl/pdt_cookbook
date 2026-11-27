@@ -6,13 +6,9 @@ import { FamilyTree } from "@/components/family/FamilyTree";
 import { RejectedRecipes } from "@/components/recipes/RejectedRecipes";
 import { LevelCard } from "@/components/profile/LevelCard";
 import { ProfileHeader } from "@/components/profile/ProfileHeader";
-import { FamilySelect } from "@/components/family/FamilySelect";
+import { ProfileDetails } from "@/components/profile/ProfileDetails";
 import { getFamilies, getFamilyMembers, getBigChain, getLittlesTree } from "@/lib/family";
 import { getMemberProfile } from "@/lib/profile";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { SubmitButton } from "@/components/ui/submit-button";
-import { updateOwnProfile } from "./actions";
 
 export default async function ProfilePage({
   searchParams,
@@ -63,36 +59,14 @@ export default async function ProfilePage({
         <LevelCard xp={user.xp} breakdown={breakdown} earnedBadges={badges} />
       </section>
 
-      <section className="mt-10">
-        <h2 className="mb-4 text-title-3-semibold text-text-primary">Profile details</h2>
-        <form action={updateOwnProfile} className="max-w-md space-y-4">
-          <div>
-            <Label htmlFor="name">Name</Label>
-            <Input id="name" name="name" required defaultValue={user.name} />
-          </div>
-          <div className="grid grid-cols-2 gap-4">
-            <div>
-              <Label htmlFor="bondNumber">Bond number</Label>
-              <Input id="bondNumber" name="bondNumber" defaultValue={user.bondNumber ?? ""} />
-            </div>
-            <div>
-              <Label htmlFor="pledgeClass">Pledge class</Label>
-              <Input id="pledgeClass" name="pledgeClass" defaultValue={user.pledgeClass ?? ""} />
-            </div>
-          </div>
-          <div>
-            <Label htmlFor="graduationYear">Graduation year</Label>
-            <Input
-              id="graduationYear"
-              name="graduationYear"
-              type="number"
-              defaultValue={user.graduationYear ?? ""}
-            />
-          </div>
-          <FamilySelect families={families} defaultValue={user.family?.id ?? null} />
-          <SubmitButton pendingLabel="Saving…">Save changes</SubmitButton>
-        </form>
-      </section>
+      <ProfileDetails
+        name={user.name}
+        bondNumber={user.bondNumber}
+        pledgeClass={user.pledgeClass}
+        graduationYear={user.graduationYear}
+        family={user.family}
+        families={families}
+      />
 
       <section className="mt-10">
         <h2 className="mb-4 text-title-3-semibold text-text-primary">

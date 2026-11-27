@@ -16,7 +16,7 @@ const jetbrainsMono = JetBrains_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "PDT Cookbook",
+  title: "Cookbook",
   description: "A private recipe collection",
 };
 

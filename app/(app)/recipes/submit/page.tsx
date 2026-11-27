@@ -3,7 +3,7 @@ import Link from "next/link";
 import { auth } from "@/auth";
 import { isProfileComplete } from "@/lib/authz";
 import { getTagSuggestions } from "@/lib/recipes";
-import { RecipeForm } from "@/components/recipes/RecipeForm";
+import { RecipeImportForm } from "@/components/recipes/RecipeImportForm";
 import { submitRecipe } from "./actions";
 
 export default async function SubmitRecipePage({
@@ -34,7 +34,7 @@ export default async function SubmitRecipePage({
       )}
 
       {canSubmit ? (
-        <RecipeForm
+        <RecipeImportForm
           action={submitRecipe}
           submitLabel="Submit for review"
           pendingLabel="Submitting…"

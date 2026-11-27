@@ -45,8 +45,8 @@ export default async function AppLayout({ children }: { children: React.ReactNod
           <div className="flex min-w-0 items-center gap-3">
             <SidebarTrigger />
             <Link href="/recipes" className="flex min-w-0 items-center gap-2.5 text-title-3-semibold text-text-primary">
-              <ShieldLogo height={30} preload />
-              <span className="truncate">PDT Cookbook</span>
+              <ShieldLogo height={30} />
+              <span className="truncate">Cookbook</span>
             </Link>
           </div>
           <HeaderMenu>

@@ -1,26 +1,22 @@
 @import "../styles/globals.css";
 
-/* --- Shield loading animation ---------------------------------------- */
+/* --- Hexagon loading animation --------------------------------------- */
 
-@keyframes pdt-twinkle {
+/* Rest, turn a sixth of a revolution (brightening on the way), rest. */
+@keyframes pdt-hex-turn {
   0%,
-  100% {
-    opacity: 0.25;
-    transform: scale(0.8);
+  10% {
+    transform: rotate(0deg);
+    opacity: 0.5;
+    animation-timing-function: cubic-bezier(0.65, 0, 0.35, 1);
   }
-  45% {
+  32% {
     opacity: 1;
-    transform: scale(1.15);
   }
-}
-
-@keyframes pdt-float {
-  0%,
+  55%,
   100% {
-    transform: translateY(0);
-  }
-  50% {
-    transform: translateY(-5px);
+    transform: rotate(60deg);
+    opacity: 0.5;
   }
 }
 
@@ -30,15 +26,11 @@
   }
 }
 
-/* Each star scales around its own centre rather than the SVG origin. */
-.pdt-star {
+/* Each ring turns around its own centre rather than the SVG origin. */
+.pdt-hex {
   transform-box: fill-box;
   transform-origin: center;
-  animation: pdt-twinkle 1.6s ease-in-out infinite;
-}
-
-.pdt-shield-float {
-  animation: pdt-float 2.8s ease-in-out infinite;
+  animation: pdt-hex-turn 1.8s infinite;
 }
 
 .pdt-spin {
@@ -46,13 +38,9 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .pdt-star,
-  .pdt-shield-float {
-    animation-duration: 0.001ms;
-    animation-iteration-count: 1;
-  }
-  .pdt-star {
-    opacity: 1;
+  /* Hold the rings still and let the label carry the message. */
+  .pdt-hex {
+    animation: none;
   }
   /* The spinner still turns — it is the only "working on it" signal on a
      disabled button — just slowly enough not to be distracting. */
